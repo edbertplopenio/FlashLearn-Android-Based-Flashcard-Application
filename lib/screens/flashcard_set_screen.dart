@@ -74,7 +74,10 @@ class _FlashcardSetScreenState extends State<FlashcardSetScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => FlashcardPracticeScreen(flashcards: flashcards),
+                      builder: (context) => FlashcardPracticeScreen(
+                        flashcards: flashcards,
+                        setTitle: widget.setName, // Pass the setTitle here
+                      ),
                     ),
                   );
                 },
