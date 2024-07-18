@@ -56,17 +56,16 @@ class _HomeScreenState extends State<HomeScreen> {
     await prefs.setString('flashcard_sets_$userId', flashcardSetsJson);
   }
 
-Future<void> _logout() async {
-  final prefs = await SharedPreferences.getInstance();
-  await prefs.remove('session_token'); // Clear session-related data
+  Future<void> _logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('session_token'); // Clear session-related data
 
-  Navigator.pushAndRemoveUntil(
-    context,
-    MaterialPageRoute(builder: (context) => const WelcomeScreen()),
-    (route) => false,
-  );
-}
-
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => const WelcomeScreen()),
+      (route) => false,
+    );
+  }
 
   void _confirmLogout() {
     showDialog(
@@ -145,21 +144,21 @@ Future<void> _logout() async {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Welcome, $userName!'),
+        title: Text(
+          'Welcome, $userName!',
+          style: TextStyle(fontFamily: 'Raleway'),
+        ),
         backgroundColor: lightColorScheme.primary,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: _confirmLogout,
-          ),
-        ],
       ),
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
             UserAccountsDrawerHeader(
-              accountName: Text(userName),
+              accountName: Text(
+                userName,
+                style: TextStyle(fontFamily: 'Raleway'),
+              ),
               accountEmail: null,
               decoration: BoxDecoration(
                 color: lightColorScheme.primary,
@@ -167,26 +166,39 @@ Future<void> _logout() async {
             ),
             ListTile(
               leading: const Icon(Icons.home),
-              title: const Text('Home'),
+              title: const Text('Home', style: TextStyle(fontFamily: 'Raleway')),
               onTap: () {
                 Navigator.pop(context);
+                _pageController.jumpToPage(0);
               },
             ),
             ListTile(
               leading: const Icon(Icons.view_list),
-              title: const Text('View Flashcard Sets'),
+              title: const Text('View Flashcard Sets', style: TextStyle(fontFamily: 'Raleway')),
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const FlashcardSetListScreen(),
-                  ),
-                );
+                Navigator.pop(context);
+                _pageController.jumpToPage(1);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.account_circle),
+              title: const Text('Profile', style: TextStyle(fontFamily: 'Raleway')),
+              onTap: () {
+                Navigator.pop(context);
+                _pageController.jumpToPage(2);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.logout),
+              title: const Text('Logout', style: TextStyle(fontFamily: 'Raleway')),
+              onTap: () {
+                Navigator.pop(context);
+                _confirmLogout();
               },
             ),
             ListTile(
               leading: const Icon(Icons.info),
-              title: const Text('About'),
+              title: const Text('About', style: TextStyle(fontFamily: 'Raleway')),
               onTap: () {
                 // Navigate to the About screen
               },
@@ -211,6 +223,7 @@ Future<void> _logout() async {
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
+                    fontFamily: 'Raleway',
                     color: lightColorScheme.primary,
                   ),
                   textAlign: TextAlign.center,
@@ -218,7 +231,6 @@ Future<void> _logout() async {
               ],
             ),
           ),
-          // Flashcard Sets Page Content
           ListView.builder(
             itemCount: flashcardSets.length,
             itemBuilder: (BuildContext context, int index) {
@@ -231,46 +243,51 @@ Future<void> _logout() async {
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
+                fontFamily: 'Raleway',
                 color: lightColorScheme.primary,
               ),
             ),
           ),
         ],
       ),
-      floatingActionButton: _currentIndex == 0
-          ? FloatingActionButton(
-              onPressed: _showCreateSetDialog,
-              tooltip: 'Create Flashcard Set',
-              child: const Icon(Icons.add),
-            )
-          : null,
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        fixedColor: Colors.pink,
-        items: const [
-          BottomNavigationBarItem(
-            label: "Home",
-            icon: Icon(Icons.home),
-          ),
-          BottomNavigationBarItem(
-            label: "Flashcard Sets",
-            icon: Icon(Icons.view_list),
-          ),
-          BottomNavigationBarItem(
-            label: "Profile",
-            icon: Icon(Icons.account_circle),
-          ),
-        ],
-        onTap: (int index) {
-          setState(() {
-            _currentIndex = index;
-            _pageController.animateToPage(
-              index,
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeInOut,
-            );
-          });
-        },
+      floatingActionButton: FloatingActionButton(
+        onPressed: _showCreateSetDialog,
+        tooltip: 'Create Flashcard Set',
+        child: const Icon(Icons.add),
+        backgroundColor: Color.fromARGB(255, 200, 155, 87),
+        shape: CircleBorder(),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: BottomAppBar(
+        shape: CircularNotchedRectangle(),
+        notchMargin: 8.0,
+        color: Color.fromARGB(255, 200, 155, 87),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Spacer(),
+            IconButton(
+              icon: Icon(Icons.home),
+              onPressed: () {
+                setState(() {
+                  _currentIndex = 0;
+                  _pageController.jumpToPage(0);
+                });
+              },
+            ),
+            Spacer(flex: 2),
+            IconButton(
+              icon: Icon(Icons.view_list),
+              onPressed: () {
+                setState(() {
+                  _currentIndex = 1;
+                  _pageController.jumpToPage(1);
+                });
+              },
+            ),
+            Spacer(),
+          ],
+        ),
       ),
     );
   }
@@ -294,6 +311,7 @@ Future<void> _logout() async {
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
+              fontFamily: 'Raleway',
             ),
           ),
         ),

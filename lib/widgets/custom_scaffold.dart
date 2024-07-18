@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
 class CustomScaffold extends StatelessWidget {
-  const CustomScaffold({super.key, this.child});
+  const CustomScaffold({Key? key, this.child}) : super(key: key);
   final Widget? child;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -12,18 +13,11 @@ class CustomScaffold extends StatelessWidget {
         elevation: 0,
       ),
       extendBodyBehindAppBar: true,
-      body: Stack(
-        children: [
-          Image.asset(
-            'assets/images/bg1.png',
-            fit: BoxFit.cover,
-            width: double.infinity,
-            height: double.infinity,
-          ),
-          SafeArea(
-            child: child!,
-          ),
-        ],
+      body: Container(
+        color: Color.fromRGBO(57, 58, 86, 1.0), // Set the background color
+        child: SafeArea(
+          child: child!,
+        ),
       ),
     );
   }

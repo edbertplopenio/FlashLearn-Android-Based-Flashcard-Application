@@ -31,6 +31,7 @@ class WelcomeButton extends StatelessWidget {
           buttonText!,
           textAlign: TextAlign.center,
           style: TextStyle(
+            fontFamily: 'Raleway',
             fontSize: 20.0,
             fontWeight: FontWeight.bold,
             color: textColor!,

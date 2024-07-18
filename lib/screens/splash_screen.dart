@@ -186,7 +186,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                   text,
                   style: const TextStyle(
                     fontFamily: 'Raleway',
-                    color: Color.fromARGB(255, 0, 0, 0),
+                    color: Color.fromRGBO(57, 58, 86, 1),
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
                   ),

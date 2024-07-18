@@ -27,23 +27,22 @@ class _SignInScreenState extends State<SignInScreen> {
     super.dispose();
   }
 
-Future<void> _signIn() async {
-  final prefs = await SharedPreferences.getInstance();
-  final savedEmail = prefs.getString('email');
-  final savedPassword = prefs.getString('password');
-  final savedUserId = prefs.getString('user_id');
+  Future<void> _signIn() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedEmail = prefs.getString('email');
+    final savedPassword = prefs.getString('password');
+    final savedUserId = prefs.getString('user_id');
 
-  if (_emailController.text == savedEmail && _passwordController.text == savedPassword) {
-    await prefs.setString('session_token', 'dummy_token'); // Add session token
-    await prefs.setString('user_id', savedUserId!); // Save user ID in the session
-    _showSuccessDialog('Login Successful');
-  } else {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Invalid email or password')),
-    );
+    if (_emailController.text == savedEmail && _passwordController.text == savedPassword) {
+      await prefs.setString('session_token', 'dummy_token'); // Add session token
+      await prefs.setString('user_id', savedUserId!); // Save user ID in the session
+      _showSuccessDialog('Login Successful');
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Invalid email or password')),
+      );
+    }
   }
-}
-
 
   Future<void> _showSuccessDialog(String message) async {
     return showDialog<void>(
@@ -53,18 +52,18 @@ Future<void> _signIn() async {
         return AlertDialog(
           title: Text(
             'Success',
-            style: TextStyle(color: lightColorScheme.primary),
+            style: TextStyle(color: lightColorScheme.primary, fontFamily: 'Raleway', fontSize: 18.0),
           ),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Text(message),
+                Text(message, style: TextStyle(fontFamily: 'Raleway', fontSize: 14.0)),
               ],
             ),
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text('OK'),
+              child: const Text('OK', style: TextStyle(fontFamily: 'Raleway')),
               onPressed: () {
                 Navigator.of(context).pop();
                 Navigator.pushReplacement(
@@ -115,6 +114,7 @@ Future<void> _signIn() async {
                           fontSize: 30.0,
                           fontWeight: FontWeight.w900,
                           color: lightColorScheme.primary,
+                          fontFamily: 'Raleway',
                         ),
                       ),
                       const SizedBox(
@@ -129,7 +129,7 @@ Future<void> _signIn() async {
                           return null;
                         },
                         decoration: InputDecoration(
-                          label: const Text('Email'),
+                          label: const Text('Email', style: TextStyle(fontFamily: 'Raleway')),
                           hintText: 'Enter Email',
                           hintStyle: const TextStyle(
                             color: Colors.black26,
@@ -162,7 +162,7 @@ Future<void> _signIn() async {
                           return null;
                         },
                         decoration: InputDecoration(
-                          label: const Text('Password'),
+                          label: const Text('Password', style: TextStyle(fontFamily: 'Raleway')),
                           hintText: 'Enter Password',
                           hintStyle: const TextStyle(
                             color: Colors.black26,
@@ -202,6 +202,7 @@ Future<void> _signIn() async {
                                 'Remember me',
                                 style: TextStyle(
                                   color: Colors.black45,
+                                  fontFamily: 'Raleway',
                                 ),
                               ),
                             ],
@@ -212,6 +213,7 @@ Future<void> _signIn() async {
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: lightColorScheme.primary,
+                                fontFamily: 'Raleway',
                               ),
                             ),
                           ),
@@ -228,7 +230,7 @@ Future<void> _signIn() async {
                               _signIn();
                             }
                           },
-                          child: const Text('Sign in'),
+                          child: const Text('Sign in', style: TextStyle(fontFamily: 'Raleway')),
                         ),
                       ),
                       const SizedBox(
@@ -252,6 +254,7 @@ Future<void> _signIn() async {
                               'Sign in with',
                               style: TextStyle(
                                 color: Colors.black45,
+                                fontFamily: 'Raleway',
                               ),
                             ),
                           ),
@@ -285,6 +288,7 @@ Future<void> _signIn() async {
                             'Don\'t have an account? ',
                             style: TextStyle(
                               color: Colors.black45,
+                              fontFamily: 'Raleway',
                             ),
                           ),
                           GestureDetector(
@@ -301,6 +305,7 @@ Future<void> _signIn() async {
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: lightColorScheme.primary,
+                                fontFamily: 'Raleway',
                               ),
                             ),
                           ),

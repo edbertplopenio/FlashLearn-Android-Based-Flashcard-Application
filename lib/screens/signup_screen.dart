@@ -45,18 +45,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
         return AlertDialog(
           title: Text(
             'Success',
-            style: TextStyle(color: lightColorScheme.primary),
+            style: TextStyle(color: lightColorScheme.primary, fontFamily: 'Raleway'),
           ),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Text(message),
+                Text(message, style: TextStyle(fontFamily: 'Raleway')),
               ],
             ),
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text('OK'),
+              child: const Text('OK', style: TextStyle(fontFamily: 'Raleway')),
               onPressed: () {
                 Navigator.of(context).pop();
                 Navigator.pushReplacement(
@@ -107,6 +107,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           fontSize: 30.0,
                           fontWeight: FontWeight.w900,
                           color: lightColorScheme.primary,
+                          fontFamily: 'Raleway',
                         ),
                       ),
                       const SizedBox(
@@ -121,7 +122,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           return null;
                         },
                         decoration: InputDecoration(
-                          label: const Text('Full Name'),
+                          label: const Text('Full Name', style: TextStyle(fontFamily: 'Raleway')),
                           hintText: 'Enter Full Name',
                           hintStyle: const TextStyle(
                             color: Colors.black26,
@@ -152,7 +153,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           return null;
                         },
                         decoration: InputDecoration(
-                          label: const Text('Email'),
+                          label: const Text('Email', style: TextStyle(fontFamily: 'Raleway')),
                           hintText: 'Enter Email',
                           hintStyle: const TextStyle(
                             color: Colors.black26,
@@ -185,7 +186,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           return null;
                         },
                         decoration: InputDecoration(
-                          label: const Text('Password'),
+                          label: const Text('Password', style: TextStyle(fontFamily: 'Raleway')),
                           hintText: 'Enter Password',
                           hintStyle: const TextStyle(
                             color: Colors.black26,
@@ -222,6 +223,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             'I agree to the processing of ',
                             style: TextStyle(
                               color: Colors.black45,
+                              fontFamily: 'Raleway',
                             ),
                           ),
                           Text(
@@ -229,6 +231,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               color: lightColorScheme.primary,
+                              fontFamily: 'Raleway',
                             ),
                           ),
                         ],
@@ -252,7 +255,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               );
                             }
                           },
-                          child: const Text('Sign up'),
+                          child: const Text('Sign up', style: TextStyle(fontFamily: 'Raleway')),
                         ),
                       ),
                       const SizedBox(
@@ -276,6 +279,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               'Sign up with',
                               style: TextStyle(
                                 color: Colors.black45,
+                                fontFamily: 'Raleway',
                               ),
                             ),
                           ),
@@ -309,6 +313,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             'Already have an account? ',
                             style: TextStyle(
                               color: Colors.black45,
+                              fontFamily: 'Raleway',
                             ),
                           ),
                           GestureDetector(
@@ -325,6 +330,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: lightColorScheme.primary,
+                                fontFamily: 'Raleway',
                               ),
                             ),
                           ),
