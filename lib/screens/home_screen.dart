@@ -37,18 +37,17 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-Future<void> _loadFlashcardSets() async {
-  final prefs = await SharedPreferences.getInstance();
-  final String? flashcardSetsJson = prefs.getString('flashcard_sets_$userId');
-  if (flashcardSetsJson != null) {
-    setState(() {
-      flashcardSets = (json.decode(flashcardSetsJson) as List)
-          .map((data) => FlashcardSet(name: data['name']))
-          .toList();
-    });
+  Future<void> _loadFlashcardSets() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String? flashcardSetsJson = prefs.getString('flashcard_sets_$userId');
+    if (flashcardSetsJson != null) {
+      setState(() {
+        flashcardSets = (json.decode(flashcardSetsJson) as List)
+            .map((data) => FlashcardSet(name: data['name']))
+            .toList();
+      });
+    }
   }
-}
-
 
   Future<void> _saveFlashcardSets() async {
     final prefs = await SharedPreferences.getInstance();
