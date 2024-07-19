@@ -6,8 +6,9 @@ import 'flashcard_practice_screen.dart'; // Import the practice screen
 
 class FlashcardSetScreen extends StatefulWidget {
   final String setName;
+  final Function updateFlashcardsCount;
 
-  const FlashcardSetScreen({Key? key, required this.setName}) : super(key: key);
+  const FlashcardSetScreen({Key? key, required this.setName, required this.updateFlashcardsCount}) : super(key: key);
 
   @override
   _FlashcardSetScreenState createState() => _FlashcardSetScreenState();
@@ -41,6 +42,7 @@ class _FlashcardSetScreenState extends State<FlashcardSetScreen> {
                 question: data['question'], answer: data['answer']))
             .toList();
       });
+      widget.updateFlashcardsCount(); // Notify HomeScreen to update the count
     }
   }
 
@@ -49,6 +51,7 @@ class _FlashcardSetScreenState extends State<FlashcardSetScreen> {
     final String flashcardsJson = json.encode(
         flashcards.map((flashcard) => {'question': flashcard.question, 'answer': flashcard.answer}).toList());
     await prefs.setString('flashcards_${widget.setName}_$userId', flashcardsJson);
+    widget.updateFlashcardsCount(); // Notify HomeScreen to update the count
   }
 
   @override

@@ -7,7 +7,9 @@ import '../widgets/custom_scaffold.dart';
 import '../models/flashcard_set.dart';
 
 class FlashcardSetListScreen extends StatefulWidget {
-  const FlashcardSetListScreen({super.key});
+  final Function updateFlashcardsCount;
+
+  const FlashcardSetListScreen({super.key, required this.updateFlashcardsCount});
 
   @override
   State<FlashcardSetListScreen> createState() => _FlashcardSetListScreenState();
@@ -22,27 +24,26 @@ class _FlashcardSetListScreenState extends State<FlashcardSetListScreen> {
     _loadFlashcardSets();
   }
 
-Future<void> _loadFlashcardSets() async {
-  final prefs = await SharedPreferences.getInstance();
-  final userId = prefs.getString('user_id') ?? '';
-  final String? flashcardSetsJson = prefs.getString('flashcard_sets_$userId');
-  if (flashcardSetsJson != null) {
-    setState(() {
-      _flashcardSets = (json.decode(flashcardSetsJson) as List)
-          .map((data) => FlashcardSet(name: data['name']))
-          .toList();
-    });
+  Future<void> _loadFlashcardSets() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getString('user_id') ?? '';
+    final String? flashcardSetsJson = prefs.getString('flashcard_sets_$userId');
+    if (flashcardSetsJson != null) {
+      setState(() {
+        _flashcardSets = (json.decode(flashcardSetsJson) as List)
+            .map((data) => FlashcardSet(name: data['name']))
+            .toList();
+      });
+    }
   }
-}
 
-Future<void> _saveFlashcardSets() async {
-  final prefs = await SharedPreferences.getInstance();
-  final userId = prefs.getString('user_id') ?? '';
-  final String flashcardSetsJson = json.encode(
-      _flashcardSets.map((set) => {'name': set.name}).toList());
-  await prefs.setString('flashcard_sets_$userId', flashcardSetsJson);
-}
-
+  Future<void> _saveFlashcardSets() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getString('user_id') ?? '';
+    final String flashcardSetsJson = json.encode(
+        _flashcardSets.map((set) => {'name': set.name}).toList());
+    await prefs.setString('flashcard_sets_$userId', flashcardSetsJson);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +78,10 @@ Future<void> _saveFlashcardSets() async {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => FlashcardSetScreen(setName: _flashcardSets[index].name),
+                        builder: (context) => FlashcardSetScreen(
+                          setName: _flashcardSets[index].name,
+                          updateFlashcardsCount: widget.updateFlashcardsCount,
+                        ),
                       ),
                     );
                   },
