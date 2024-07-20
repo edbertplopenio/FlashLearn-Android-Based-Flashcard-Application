@@ -23,6 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
   late PageController _cardsPageController;
   List<FlashcardSet> flashcardSets = [];
   int totalFlashcards = 0;
+  String searchQuery = '';
 
   final List<String> flashcardFacts = [
     "Flashcards are a powerful tool for memorization.",
@@ -60,7 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (flashcardSetsJson != null) {
       setState(() {
         flashcardSets = (json.decode(flashcardSetsJson) as List)
-            .map((data) => FlashcardSet(name: data['name']))
+            .map((data) => FlashcardSet.fromJson(data))
             .toList();
       });
       _loadFlashcardsCount();
@@ -71,7 +72,8 @@ class _HomeScreenState extends State<HomeScreen> {
     final prefs = await SharedPreferences.getInstance();
     int count = 0;
     for (var set in flashcardSets) {
-      final String? flashcardsJson = prefs.getString('flashcards_${set.name}_$userId');
+      final String? flashcardsJson =
+          prefs.getString('flashcards_${set.name}_$userId');
       if (flashcardsJson != null) {
         final List flashcards = json.decode(flashcardsJson);
         count += flashcards.length;
@@ -84,9 +86,28 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _saveFlashcardSets() async {
     final prefs = await SharedPreferences.getInstance();
-    final String flashcardSetsJson = json.encode(
-        flashcardSets.map((set) => {'name': set.name}).toList());
+    final String flashcardSetsJson = json.encode(flashcardSets
+        .map((set) => set.toJson())
+        .toList());
     await prefs.setString('flashcard_sets_$userId', flashcardSetsJson);
+  }
+
+  Future<void> _deleteFlashcardSet(String setName) async {
+    setState(() {
+      flashcardSets.removeWhere((set) => set.name == setName);
+    });
+    _saveFlashcardSets();
+    _loadFlashcardsCount(); // Update flashcard count
+  }
+
+  Future<void> _renameFlashcardSet(String oldName, String newName) async {
+    setState(() {
+      final index = flashcardSets.indexWhere((set) => set.name == oldName);
+      if (index != -1) {
+        flashcardSets[index] = flashcardSets[index].copyWith(name: newName);
+      }
+    });
+    _saveFlashcardSets();
   }
 
   Future<void> _logout() async {
@@ -132,20 +153,122 @@ class _HomeScreenState extends State<HomeScreen> {
       context: context,
       builder: (BuildContext context) {
         String setName = '';
+        bool nameExists = false;
 
-        return AlertDialog(
-          title: const Text('Create Flashcard Set'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              TextField(
-                decoration: const InputDecoration(labelText: 'Set Name'),
-                onChanged: (value) {
-                  setName = value;
-                },
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text('Create Flashcard Set'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  TextField(
+                    decoration: InputDecoration(
+                      labelText: 'Set Name',
+                      errorText:
+                          nameExists ? 'Set name already exists' : null,
+                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        setName = value;
+                        nameExists = _checkDuplicateSetName(setName);
+                      });
+                    },
+                  ),
+                ],
               ),
-            ],
-          ),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text('Cancel'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                TextButton(
+                  child: const Text('Create'),
+                  onPressed: () {
+                    if (setName.isNotEmpty && !nameExists) {
+                      setState(() {
+                        String creationDate =
+                            DateTime.now().toLocal().toString().split(' ')[0];
+                        flashcardSets.add(
+                            FlashcardSet(name: setName, creationDate: creationDate));
+                      });
+                      _saveFlashcardSets();
+                      _loadFlashcardsCount(); // Update flashcard count
+                      Navigator.of(context).pop();
+                    }
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _showRenameSetDialog(FlashcardSet flashcardSet) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        final TextEditingController _controller = TextEditingController(text: flashcardSet.name);
+        String setName = flashcardSet.name;
+        bool nameExists = false;
+
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text('Rename Flashcard Set'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  TextField(
+                    controller: _controller,
+                    decoration: InputDecoration(
+                      labelText: 'New Set Name',
+                      errorText: nameExists ? 'Set name already exists' : null,
+                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        setName = value;
+                        nameExists = _checkDuplicateSetName(setName);
+                      });
+                    },
+                  ),
+                ],
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text('Cancel'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                TextButton(
+                  child: const Text('Rename'),
+                  onPressed: () {
+                    if (setName.isNotEmpty && !nameExists) {
+                      _renameFlashcardSet(flashcardSet.name, setName);
+                      Navigator.of(context).pop();
+                    }
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _showDeleteConfirmationDialog(FlashcardSet flashcardSet) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Delete Flashcard Set'),
+          content: Text('Do you really want to delete "${flashcardSet.name}"?'),
           actions: <Widget>[
             TextButton(
               child: const Text('Cancel'),
@@ -154,16 +277,10 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
             TextButton(
-              child: const Text('Create'),
+              child: const Text('Delete'),
               onPressed: () {
-                if (setName.isNotEmpty) {
-                  setState(() {
-                    flashcardSets.add(FlashcardSet(name: setName));
-                  });
-                  _saveFlashcardSets();
-                  _loadFlashcardsCount(); // Update flashcard count
-                  Navigator.of(context).pop();
-                }
+                Navigator.of(context).pop();
+                _deleteFlashcardSet(flashcardSet.name);
               },
             ),
           ],
@@ -172,8 +289,34 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  bool _checkDuplicateSetName(String setName) {
+    for (var set in flashcardSets) {
+      if (set.name == setName) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   void _updateFlashcardsCount() {
     _loadFlashcardsCount();
+  }
+
+  void _onSearchQueryChanged(String query) {
+    setState(() {
+      searchQuery = query;
+    });
+  }
+
+  List<FlashcardSet> _getFilteredFlashcardSets() {
+    if (searchQuery.isEmpty) {
+      return flashcardSets;
+    } else {
+      return flashcardSets
+          .where((set) =>
+              set.name.toLowerCase().contains(searchQuery.toLowerCase()))
+          .toList();
+    }
   }
 
   @override
@@ -181,6 +324,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: lightColorScheme.primary,
+        title: const Text('Home'),
       ),
       drawer: Drawer(
         child: ListView(
@@ -385,11 +529,30 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ],
           ),
-          ListView.builder(
-            itemCount: flashcardSets.length,
-            itemBuilder: (BuildContext context, int index) {
-              return _buildCard(flashcardSets[index]);
-            },
+          Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextField(
+                  onChanged: _onSearchQueryChanged,
+                  decoration: InputDecoration(
+                    hintText: 'Search Flashcard Sets...',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                    prefixIcon: Icon(Icons.search),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: _getFilteredFlashcardSets().length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return _buildCard(_getFilteredFlashcardSets()[index]);
+                  },
+                ),
+              ),
+            ],
           ),
           Center(
             child: Text(
@@ -489,6 +652,10 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildCard(FlashcardSet flashcardSet) {
     return Card(
       margin: const EdgeInsets.all(8.0),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12.0),
+      ),
+      elevation: 4.0,
       child: InkWell(
         onTap: () {
           Navigator.push(
@@ -501,15 +668,85 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           );
         },
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Text(
-            flashcardSet.name,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              fontFamily: 'Raleway',
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Color.fromARGB(255, 200, 155, 87),
+                Color.fromARGB(255, 235, 200, 150),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
+            borderRadius: BorderRadius.circular(12.0),
+          ),
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Icon(
+                Icons.folder,
+                size: 40,
+                color: Colors.white,
+              ),
+              SizedBox(width: 16.0),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      flashcardSet.name,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Raleway',
+                        color: Colors.white,
+                      ),
+                    ),
+                    SizedBox(height: 8.0),
+                    Text(
+                      'Created on: ${flashcardSet.creationDate}',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontFamily: 'Raleway',
+                        color: Colors.white70,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              IconButton(
+                icon: Icon(Icons.more_vert, color: Colors.white),
+                onPressed: () {
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          ListTile(
+                            leading: Icon(Icons.edit),
+                            title: Text('Rename'),
+                            onTap: () {
+                              Navigator.pop(context);
+                              _showRenameSetDialog(flashcardSet);
+                            },
+                          ),
+                          ListTile(
+                            leading: Icon(Icons.delete),
+                            title: Text('Delete'),
+                            onTap: () {
+                              Navigator.pop(context);
+                              _showDeleteConfirmationDialog(flashcardSet);
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+              ),
+            ],
           ),
         ),
       ),
