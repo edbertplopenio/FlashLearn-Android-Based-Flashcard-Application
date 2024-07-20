@@ -22,6 +22,7 @@ dependencies:
   fl_chart: ^0.68.0
   json_annotation: ^4.9.0
   vertical_card_pager: ^1.6.2
+  image_picker: ^1.1.2
 
 dev_dependencies:
   flutter_test:

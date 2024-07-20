@@ -1,12 +1,15 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import 'dart:io';
 import 'flashcard_set_list_screen.dart';
 import '../theme/theme.dart';
 import '../screens/flashcard_set_screen.dart';
 import '../models/flashcard_set.dart';
 import '../models/flashcard.dart';
 import '../screens/welcome_screen.dart';
+import 'profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -18,6 +21,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   String userName = 'User';
   String userId = '';
+  String? profileImagePath;
   int _currentIndex = 0;
   late PageController _pageController;
   late PageController _cardsPageController;
@@ -41,16 +45,17 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _loadUserName();
+    _loadUserNameAndProfileImage();
     _pageController = PageController(initialPage: _currentIndex);
     _cardsPageController = PageController(initialPage: 1, viewportFraction: 0.5); // Adjust the viewportFraction as needed
   }
 
-  Future<void> _loadUserName() async {
+  Future<void> _loadUserNameAndProfileImage() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       userName = prefs.getString('name') ?? 'User';
       userId = prefs.getString('user_id') ?? '';
+      profileImagePath = prefs.getString('profile_image');
       _loadFlashcardSets();
     });
   }
@@ -319,6 +324,18 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  void _updateUserName(String newUserName) {
+    setState(() {
+      userName = newUserName;
+    });
+  }
+
+  void _updateProfileImage(String? newProfileImagePath) {
+    setState(() {
+      profileImagePath = newProfileImagePath;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -336,6 +353,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 style: TextStyle(fontFamily: 'Raleway'),
               ),
               accountEmail: null,
+              currentAccountPicture: profileImagePath != null
+                  ? CircleAvatar(
+                      backgroundImage: kIsWeb
+                          ? NetworkImage(profileImagePath!)
+                          : FileImage(File(profileImagePath!)) as ImageProvider<Object>,
+                    )
+                  : CircleAvatar(
+                      child: Icon(Icons.account_circle, size: 50),
+                    ),
               decoration: BoxDecoration(
                 color: lightColorScheme.primary,
               ),
@@ -364,7 +390,15 @@ class _HomeScreenState extends State<HomeScreen> {
               title: const Text('Profile', style: TextStyle(fontFamily: 'Raleway')),
               onTap: () {
                 Navigator.pop(context);
-                _pageController.jumpToPage(2);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ProfileScreen(
+                      onUserNameChanged: _updateUserName,
+                      onProfileImageChanged: _updateProfileImage, // Pass the callback here
+                    ),
+                  ),
+                );
               },
             ),
             ListTile(
