@@ -449,31 +449,34 @@ class _HomeScreenState extends State<HomeScreen> {
                               color: Color.fromARGB(255, 200, 155, 87),
                               borderRadius: BorderRadius.circular(12.0),
                             ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
-                                Icon(
-                                  Icons.folder,
-                                  size: 50,
-                                  color: Colors.black,
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.folder,
+                                      size: 80,
+                                      color: Colors.white,
+                                    ),
+                                    Text(
+                                      'Set',
+                                      style: TextStyle(
+                                        fontSize: 23,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: 'Raleway',
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                SizedBox(height: 8.0),
-                                Text(
-                                  'SETs',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: 'Raleway',
-                                    color: Colors.black,
-                                  ),
-                                ),
-                                SizedBox(height: 8.0),
                                 Text(
                                   '${flashcardSets.length}',
                                   style: TextStyle(
-                                    fontSize: 24,
+                                    fontSize: 95,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.black,
+                                    color: Colors.white,
                                   ),
                                 ),
                               ],
@@ -488,31 +491,34 @@ class _HomeScreenState extends State<HomeScreen> {
                               color: Color.fromARGB(255, 200, 155, 87),
                               borderRadius: BorderRadius.circular(12.0),
                             ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
-                                Icon(
-                                  Icons.note,
-                                  size: 50,
-                                  color: Colors.black,
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.note,
+                                      size: 80,
+                                      color: Colors.white,
+                                    ),
+                                    Text(
+                                      'Card',
+                                      style: TextStyle(
+                                        fontSize: 23,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: 'Raleway',
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                SizedBox(height: 8.0),
-                                Text(
-                                  'CARDs',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: 'Raleway',
-                                    color: Colors.black,
-                                  ),
-                                ),
-                                SizedBox(height: 8.0),
                                 Text(
                                   '$totalFlashcards',
                                   style: TextStyle(
-                                    fontSize: 24,
+                                    fontSize: 95,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.black,
+                                    color: Colors.white,
                                   ),
                                 ),
                               ],
@@ -545,7 +551,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold,
                                           fontFamily: 'Raleway',
-                                          color: Colors.black,
+                                          color: Colors.white,
                                         ),
                                         textAlign: TextAlign.center,
                                       ),
@@ -582,7 +588,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: ListView.builder(
                   itemCount: _getFilteredFlashcardSets().length,
                   itemBuilder: (BuildContext context, int index) {
-                    return _buildCard(_getFilteredFlashcardSets()[index]);
+                    return _buildFlashcardSetCard(_getFilteredFlashcardSets()[index]);
                   },
                 ),
               ),
@@ -656,12 +662,12 @@ class _HomeScreenState extends State<HomeScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'WELCOME, $userName!',
+                'Welcome, $userName!',
                 style: TextStyle(
-                  fontSize: 24,
+                  fontSize: 21,
                   fontWeight: FontWeight.bold,
                   fontFamily: 'Raleway',
-                  color: Colors.black,
+                  color: const Color.fromARGB(255, 255, 255, 255),
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -669,9 +675,10 @@ class _HomeScreenState extends State<HomeScreen> {
               Text(
                 'Learn Smarter, Recall Faster', // Replace with the actual email
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 13,
                   fontFamily: 'Raleway',
-                  color: Colors.black,
+                  fontWeight: FontWeight.w500,
+                  color: const Color.fromARGB(255, 255, 255, 255),
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -683,7 +690,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildCard(FlashcardSet flashcardSet) {
+  Widget _buildFlashcardSetCard(FlashcardSet flashcardSet) {
     return Card(
       margin: const EdgeInsets.all(8.0),
       shape: RoundedRectangleBorder(
