@@ -26,6 +26,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String? _profileImagePath;
   final List<String> validImageFormats = ['jpg', 'jpeg', 'png'];
   final _formKey = GlobalKey<FormState>();
+  bool _obscureOldPassword = true;
+  bool _obscureNewPassword = true;
+  String? _savedPassword;
 
   @override
   void initState() {
@@ -43,6 +46,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       _usernameController.text = prefs.getString('name') ?? '';
       _emailController.text = prefs.getString('email') ?? '';
       _profileImagePath = prefs.getString('profile_image');
+      _savedPassword = prefs.getString('password');
     });
   }
 
@@ -107,7 +111,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Success'),
+          title: const Text('Success'),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
@@ -134,7 +138,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       barrierDismissible: true,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Error'),
+          title: const Text('Error'),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
@@ -168,7 +172,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (value == null || value.isEmpty) {
       return 'Please enter your email';
     }
-    final emailRegExp = RegExp(r'^[^@]+@[^@]+\.[^@]+');
+    final emailRegExp = RegExp(
+      r'^[a-zA-Z0-9]+[a-zA-Z0-9._%+-]*@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    );
     if (!emailRegExp.hasMatch(value)) {
       return 'Please enter a valid email';
     }
@@ -179,6 +185,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (value == null || value.isEmpty) {
       return 'Please enter your full name';
     }
+    if (!RegExp(r"^[a-zA-Z\s]+$").hasMatch(value)) {
+      return 'Please enter a valid name';
+    }
     if (value.length < 3) {
       return 'Full name must be at least 3 characters long';
     }
@@ -186,22 +195,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   String? _validateOldPassword(String? value) {
-    final prefs = SharedPreferences.getInstance();
-    if (value == null || value.isEmpty) {
-      return 'Please enter your old password';
-    }
-    if (prefs.then((prefs) => prefs.getString('password')) != value) {
-      return 'Old password is incorrect';
+    if (_newPasswordController.text.isNotEmpty) {
+      if (value == null || value.isEmpty) {
+        return 'Please enter your old password';
+      }
+      if (_savedPassword != value) {
+        return 'Old password is incorrect';
+      }
     }
     return null;
   }
 
   String? _validateNewPassword(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Please enter a new password';
+      return null; // No need to validate if it's empty
     }
-    if (value.length < 6) {
-      return 'New password must be at least 6 characters long';
+    if (value.length < 8) {
+      return 'New password must be at least 8 characters long';
+    }
+    if (!RegExp(r'[A-Z]').hasMatch(value)) {
+      return 'New password must contain at least one uppercase letter';
+    }
+    if (!RegExp(r'[0-9]').hasMatch(value)) {
+      return 'New password must contain at least one number';
     }
     return null;
   }
@@ -210,7 +226,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Profile', style: TextStyle(fontFamily: 'Raleway')),
+        title: const Text('Edit Profile', style: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.bold)),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -230,13 +246,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             image: kIsWeb
                                 ? NetworkImage(_profileImagePath!)
                                 : FileImage(File(_profileImagePath!)) as ImageProvider<Object>,
-                            fit: BoxFit.cover,
+                            fit: BoxFit.contain,
                           )
                         : null,
                     color: Colors.grey[300],
                   ),
                   child: _profileImagePath == null
-                      ? Icon(
+                      ? const Icon(
                           Icons.add_a_photo,
                           size: 50,
                           color: Colors.white,
@@ -244,49 +260,69 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       : null,
                 ),
               ),
-              SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
               TextFormField(
                 controller: _usernameController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Full Name',
-                  labelStyle: TextStyle(fontFamily: 'Raleway'),
+                  labelStyle: TextStyle(fontFamily: 'Raleway', fontWeight: FontWeight.bold),
                 ),
                 validator: _validateFullName,
               ),
-              SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
               TextFormField(
                 controller: _emailController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Email',
-                  labelStyle: TextStyle(fontFamily: 'Raleway'),
+                  labelStyle: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.bold),
                 ),
                 keyboardType: TextInputType.emailAddress,
                 validator: _validateEmail,
               ),
-              SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
               TextFormField(
                 controller: _oldPasswordController,
                 decoration: InputDecoration(
-                  labelText: 'Old Password',
-                  labelStyle: TextStyle(fontFamily: 'Raleway'),
+                  labelText: 'Password',
+                  labelStyle: const TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.bold),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscureOldPassword ? Icons.visibility : Icons.visibility_off,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscureOldPassword = !_obscureOldPassword;
+                      });
+                    },
+                  ),
                 ),
-                obscureText: true,
+                obscureText: _obscureOldPassword,
                 validator: _validateOldPassword,
               ),
-              SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
               TextFormField(
                 controller: _newPasswordController,
                 decoration: InputDecoration(
                   labelText: 'New Password',
-                  labelStyle: TextStyle(fontFamily: 'Raleway'),
+                  labelStyle: const TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.bold),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscureNewPassword ? Icons.visibility : Icons.visibility_off,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscureNewPassword = !_obscureNewPassword;
+                      });
+                    },
+                  ),
                 ),
-                obscureText: true,
+                obscureText: _obscureNewPassword,
                 validator: _validateNewPassword,
               ),
-              SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
               ElevatedButton(
                 onPressed: _saveProfileData,
-                child: Text('Save Profile', style: TextStyle(fontFamily: 'Raleway')),
+                child: const Text('Save Profile', style: TextStyle(fontFamily: 'Raleway')),
               ),
             ],
           ),

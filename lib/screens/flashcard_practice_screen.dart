@@ -77,7 +77,7 @@ class _FlashcardPracticeScreenState extends State<FlashcardPracticeScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Practice Cards'),
+        title: Text('Practice Cards', style: TextStyle(fontFamily: 'Raleway')),
       ),
       body: Center(
         child: Column(
@@ -87,12 +87,12 @@ class _FlashcardPracticeScreenState extends State<FlashcardPracticeScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Column(
                 children: [
-                  Text(widget.setTitle, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  Text(widget.setTitle, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'Raleway')),
                   SizedBox(height: 5),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('${currentIndex + 1} / ${widget.flashcards.length}', style: TextStyle(fontSize: 16)),
+                      Text('${currentIndex + 1} / ${widget.flashcards.length}', style: TextStyle(fontSize: 16, fontFamily: 'Raleway')),
                     ],
                   ),
                   SizedBox(height: 10),
@@ -111,7 +111,7 @@ class _FlashcardPracticeScreenState extends State<FlashcardPracticeScreen> {
                   child: Center(
                     child: Text(
                       widget.flashcards[currentIndex].question,
-                      style: TextStyle(fontSize: 24),
+                      style: TextStyle(fontSize: 24, fontFamily: 'Raleway'),
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -125,7 +125,7 @@ class _FlashcardPracticeScreenState extends State<FlashcardPracticeScreen> {
                   child: Center(
                     child: Text(
                       widget.flashcards[currentIndex].answer,
-                      style: TextStyle(fontSize: 24),
+                      style: TextStyle(fontSize: 24, fontFamily: 'Raleway'),
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -149,18 +149,32 @@ class _FlashcardPracticeScreenState extends State<FlashcardPracticeScreen> {
                 ),
               ],
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                ElevatedButton(
-                  onPressed: _previousCard,
-                  child: Text('Previous'),
-                ),
-                ElevatedButton(
-                  onPressed: _nextCard,
-                  child: Text('Next'),
-                ),
-              ],
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: _previousCard,
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(vertical: 16.0),
+                      ),
+                      child: Text('Previous', style: TextStyle(fontFamily: 'Raleway', fontSize: 16)),
+                    ),
+                  ),
+                  SizedBox(width: 16), // Space between buttons
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: _nextCard,
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(vertical: 16.0),
+                      ),
+                      child: Text('Next', style: TextStyle(fontFamily: 'Raleway', fontSize: 16)),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),

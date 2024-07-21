@@ -106,6 +106,14 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _renameFlashcardSet(String oldName, String newName) async {
+    final prefs = await SharedPreferences.getInstance();
+    final String? flashcardsJson =
+        prefs.getString('flashcards_${oldName}_$userId');
+    if (flashcardsJson != null) {
+      await prefs.setString('flashcards_${newName}_$userId', flashcardsJson);
+      await prefs.remove('flashcards_${oldName}_$userId');
+    }
+
     setState(() {
       final index = flashcardSets.indexWhere((set) => set.name == oldName);
       if (index != -1) {
@@ -484,7 +492,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     Icon(
                                       Icons.folder,
                                       size: 80,
-                                      color: Colors.white,
+                                      color: Colors.white,                               
                                     ),
                                     Text(
                                       'Set',
@@ -780,7 +788,7 @@ class _HomeScreenState extends State<HomeScreen> {
             gradient: LinearGradient(
               colors: [
                 Color.fromARGB(255, 200, 155, 87),
-                Color.fromARGB(255, 235, 200, 150),
+                Color.fromARGB(255, 200, 155, 87),
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -845,7 +853,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: <Widget>[
                           ListTile(
                             leading: Icon(Icons.edit),
-                            title: Text('Rename', style: TextStyle(fontFamily: 'Raleway')),
+                            title: Text('Rename', style: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.bold)),
                             onTap: () {
                               Navigator.pop(context);
                               _showRenameSetDialog(flashcardSet);
@@ -853,7 +861,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           ListTile(
                             leading: Icon(Icons.delete),
-                            title: Text('Delete', style: TextStyle(fontFamily: 'Raleway')),
+                            title: Text('Delete', style: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.bold)),
                             onTap: () {
                               Navigator.pop(context);
                               _showDeleteConfirmationDialog(flashcardSet);

@@ -58,63 +58,103 @@ class _FlashcardSetScreenState extends State<FlashcardSetScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.setName),
+        title: Text(widget.setName, style: TextStyle(fontFamily: 'Raleway', fontWeight: FontWeight.bold)),
       ),
       body: Stack(
         children: [
-          ListView.builder(
-            itemCount: flashcards.length,
-            itemBuilder: (BuildContext context, int index) {
-              return _buildFlashcardItem(flashcards[index]);
-            },
-          ),
-          Align(
-            alignment: Alignment.bottomLeft,
-            child: Padding(
+          Padding(
+            padding: const EdgeInsets.only(bottom: 96.0), // Adjust the padding to avoid overlap with buttons
+            child: GridView.builder(
               padding: const EdgeInsets.all(16.0),
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => FlashcardPracticeScreen(
-                        flashcards: flashcards,
-                        setTitle: widget.setName, // Pass the setTitle here
-                      ),
-                    ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                ),
-                child: Text(
-                  'Practice Cards',
-                  style: TextStyle(fontSize: 16),
-                ),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 16.0,
+                mainAxisSpacing: 16.0,
+                childAspectRatio: 1.0,
               ),
+              itemCount: flashcards.length,
+              itemBuilder: (BuildContext context, int index) {
+                return _buildFlashcardItem(flashcards[index]);
+              },
             ),
           ),
           Align(
-            alignment: Alignment.bottomRight,
+            alignment: Alignment.bottomCenter,
             child: Padding(
               padding: const EdgeInsets.all(16.0),
-              child: ElevatedButton(
-                onPressed: _addFlashcard,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
-                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => FlashcardPracticeScreen(
+                              flashcards: flashcards,
+                              setTitle: widget.setName, // Pass the setTitle here
+                            ),
+                          ),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFFC89B57),
+                        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        shadowColor: Colors.amber,
+                        elevation: 20,
+                      ),
+                      child: Text(
+                        'Practice Cards',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontFamily: 'Raleway',
+                          color: Colors.white,
+                          shadows: [
+                            Shadow(
+                              blurRadius: 10.0,
+                              color: Colors.amber,
+                              offset: Offset(0, 0),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-                child: Text(
-                  'Add Card',
-                  style: TextStyle(fontSize: 16),
-                ),
+                  SizedBox(width: 16), // Space between buttons
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: _addFlashcard,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFFC89B57),
+                        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        shadowColor: Colors.amber,
+                        elevation: 20,
+                      ),
+                      child: Text(
+                        'Add Card',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontFamily: 'Raleway',
+                          color: Colors.white,
+                          shadows: [
+                            Shadow(
+                              blurRadius: 10.0,
+                              color: Colors.amber,
+                              offset: Offset(0, 0),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -124,28 +164,81 @@ class _FlashcardSetScreenState extends State<FlashcardSetScreen> {
   }
 
   Widget _buildFlashcardItem(Flashcard flashcard) {
-    return Card(
-      margin: EdgeInsets.all(8.0),
-      child: ListTile(
-        title: Text(flashcard.question),
-        subtitle: Text(flashcard.answer),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            IconButton(
-              icon: Icon(Icons.edit),
-              onPressed: () {
-                _editFlashcard(flashcard);
+    return Container(
+      decoration: BoxDecoration(
+        color: Color(0xFFC89B57),
+        borderRadius: BorderRadius.circular(16.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.shade200,
+            offset: Offset(-5, -5),
+            blurRadius: 10,
+            spreadRadius: 1,
+          ),
+          BoxShadow(
+            color: Colors.grey.shade400,
+            offset: Offset(5, 5),
+            blurRadius: 10,
+            spreadRadius: 1,
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Flexible(
+            child: Text(
+              flashcard.question,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18.0,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Raleway',
+              ),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 2,
+            ),
+          ),
+          SizedBox(height: 8.0),
+          Expanded(
+            child: SingleChildScrollView(
+              child: Text(
+                flashcard.answer,
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.7),
+                  fontSize: 14.0,
+                  fontFamily: 'Raleway',
+                ),
+              ),
+            ),
+          ),
+          Align(
+            alignment: Alignment.bottomRight,
+            child: PopupMenuButton<String>(
+              onSelected: (value) {
+                if (value == 'edit') {
+                  _editFlashcard(flashcard);
+                } else if (value == 'delete') {
+                  _confirmDeleteFlashcard(flashcard);
+                }
+              },
+              icon: Icon(Icons.more_vert, color: Colors.white),
+              itemBuilder: (BuildContext context) {
+                return [
+                  PopupMenuItem(
+                    value: 'edit',
+                    child: Text('Edit', style: TextStyle(fontFamily: 'Raleway')),
+                  ),
+                  PopupMenuItem(
+                    value: 'delete',
+                    child: Text('Delete', style: TextStyle(fontFamily: 'Raleway')),
+                  ),
+                ];
               },
             ),
-            IconButton(
-              icon: Icon(Icons.delete),
-              onPressed: () {
-                _deleteFlashcard(flashcard);
-              },
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -158,7 +251,7 @@ class _FlashcardSetScreenState extends State<FlashcardSetScreen> {
         String answer = '';
 
         return AlertDialog(
-          title: Text('Add Flashcard'),
+          title: Text('Add Flashcard', style: TextStyle(fontFamily: 'Raleway')),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
@@ -167,24 +260,28 @@ class _FlashcardSetScreenState extends State<FlashcardSetScreen> {
                 onChanged: (value) {
                   question = value;
                 },
+                maxLines: null,
+                minLines: 1,
               ),
               TextField(
                 decoration: InputDecoration(labelText: 'Answer'),
                 onChanged: (value) {
                   answer = value;
                 },
+                maxLines: null,
+                minLines: 1,
               ),
             ],
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('Cancel'),
+              child: Text('Cancel', style: TextStyle(fontFamily: 'Raleway')),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text('Add'),
+              child: Text('Add', style: TextStyle(fontFamily: 'Raleway')),
               onPressed: () {
                 if (question.isNotEmpty && answer.isNotEmpty) {
                   setState(() {
@@ -209,7 +306,7 @@ class _FlashcardSetScreenState extends State<FlashcardSetScreen> {
         String editedAnswer = flashcard.answer;
 
         return AlertDialog(
-          title: Text('Edit Flashcard'),
+          title: Text('Edit Flashcard', style: TextStyle(fontFamily: 'Raleway')),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
@@ -219,6 +316,8 @@ class _FlashcardSetScreenState extends State<FlashcardSetScreen> {
                 onChanged: (value) {
                   editedQuestion = value;
                 },
+                maxLines: null,
+                minLines: 1,
               ),
               TextField(
                 decoration: InputDecoration(labelText: 'Answer'),
@@ -226,18 +325,20 @@ class _FlashcardSetScreenState extends State<FlashcardSetScreen> {
                 onChanged: (value) {
                   editedAnswer = value;
                 },
+                maxLines: null,
+                minLines: 1,
               ),
             ],
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('Cancel'),
+              child: Text('Cancel', style: TextStyle(fontFamily: 'Raleway')),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text('Save'),
+              child: Text('Save', style: TextStyle(fontFamily: 'Raleway')),
               onPressed: () {
                 if (editedQuestion.isNotEmpty && editedAnswer.isNotEmpty) {
                   setState(() {
@@ -255,10 +356,33 @@ class _FlashcardSetScreenState extends State<FlashcardSetScreen> {
     );
   }
 
-  void _deleteFlashcard(Flashcard flashcard) {
-    setState(() {
-      flashcards.remove(flashcard);
-    });
-    _saveFlashcards();
+  void _confirmDeleteFlashcard(Flashcard flashcard) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Delete Flashcard', style: TextStyle(fontFamily: 'Raleway')),
+          content: Text('Are you sure you want to delete this flashcard?', style: TextStyle(fontFamily: 'Raleway')),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel', style: TextStyle(fontFamily: 'Raleway')),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Delete', style: TextStyle(fontFamily: 'Raleway')),
+              onPressed: () {
+                setState(() {
+                  flashcards.remove(flashcard);
+                });
+                _saveFlashcards();
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }
