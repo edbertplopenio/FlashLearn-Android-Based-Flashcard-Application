@@ -19,6 +19,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool agreePersonalData = true;
+  bool _obscurePassword = true;
 
   @override
   void dispose() {
@@ -73,6 +74,42 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
+  String? _validateName(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter Full name';
+    }
+    if (!RegExp(r"^[a-zA-Z\s]+$").hasMatch(value)) {
+      return 'Please enter a valid name';
+    }
+    return null;
+  }
+
+  String? _validateEmail(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter Email';
+    }
+    if (!RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$").hasMatch(value)) {
+      return 'Please enter a valid email address';
+    }
+    return null;
+  }
+
+  String? _validatePassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter Password';
+    }
+    if (value.length < 8) {
+      return 'Password must be at least 8 characters';
+    }
+    if (!RegExp(r'[A-Z]').hasMatch(value)) {
+      return 'Password must contain at least one uppercase letter';
+    }
+    if (!RegExp(r'[0-9]').hasMatch(value)) {
+      return 'Password must contain at least one number';
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
@@ -115,27 +152,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                       TextFormField(
                         controller: _nameController,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter Full name';
-                          }
-                          return null;
-                        },
+                        validator: _validateName,
                         decoration: InputDecoration(
-                          label: const Text('Full Name', style: TextStyle(fontFamily: 'Raleway')),
+                          label: const Text('Full Name', style: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.w600,)),
                           hintText: 'Enter Full Name',
                           hintStyle: const TextStyle(
                             color: Colors.black26,
                           ),
                           border: OutlineInputBorder(
                             borderSide: const BorderSide(
-                              color: Colors.black12,
+                              color: Colors.black26,
                             ),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderSide: const BorderSide(
-                              color: Colors.black12,
+                              color: Colors.black26,
                             ),
                             borderRadius: BorderRadius.circular(10),
                           ),
@@ -146,27 +178,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                       TextFormField(
                         controller: _emailController,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter Email';
-                          }
-                          return null;
-                        },
+                        validator: _validateEmail,
                         decoration: InputDecoration(
-                          label: const Text('Email', style: TextStyle(fontFamily: 'Raleway')),
+                          label: const Text('Email', style: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.w600)),
                           hintText: 'Enter Email',
                           hintStyle: const TextStyle(
                             color: Colors.black26,
                           ),
                           border: OutlineInputBorder(
                             borderSide: const BorderSide(
-                              color: Colors.black12,
+                              color: Colors.black26,
                             ),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderSide: const BorderSide(
-                              color: Colors.black12,
+                              color: Colors.black26,
                             ),
                             borderRadius: BorderRadius.circular(10),
                           ),
@@ -177,31 +204,36 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                       TextFormField(
                         controller: _passwordController,
-                        obscureText: true,
+                        obscureText: _obscurePassword,
                         obscuringCharacter: '*',
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter Password';
-                          }
-                          return null;
-                        },
+                        validator: _validatePassword,
                         decoration: InputDecoration(
-                          label: const Text('Password', style: TextStyle(fontFamily: 'Raleway')),
+                          label: const Text('Password', style: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.w600)),
                           hintText: 'Enter Password',
                           hintStyle: const TextStyle(
                             color: Colors.black26,
                           ),
                           border: OutlineInputBorder(
                             borderSide: const BorderSide(
-                              color: Colors.black12,
+                              color: Colors.black26,
                             ),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderSide: const BorderSide(
-                              color: Colors.black12,
+                              color: Colors.black26,
                             ),
                             borderRadius: BorderRadius.circular(10),
+                          ),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _obscurePassword = !_obscurePassword;
+                              });
+                            },
                           ),
                         ),
                       ),
@@ -222,8 +254,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           const Text(
                             'I agree to the processing of ',
                             style: TextStyle(
-                              color: Colors.black45,
+                              color: Colors.black,
                               fontFamily: 'Raleway',
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                           Text(
@@ -255,7 +288,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               );
                             }
                           },
-                          child: const Text('Sign up', style: TextStyle(fontFamily: 'Raleway')),
+                          child: const Text('Sign up', style: TextStyle(fontFamily: 'Raleway',)),
                         ),
                       ),
                       const SizedBox(
@@ -278,8 +311,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             child: Text(
                               'Sign up with',
                               style: TextStyle(
-                                color: Colors.black45,
+                                color: Colors.black,
                                 fontFamily: 'Raleway',
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                           ),
@@ -297,10 +331,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          Logo(FontAwesomeIcons.facebook),
-                          Logo(FontAwesomeIcons.twitter),
-                          Logo(FontAwesomeIcons.google),
-                          Logo(FontAwesomeIcons.apple),
+                          Icon(
+                            FontAwesomeIcons.facebook,
+                            color: Color(0xFF393A56),
+                          ),
+                          Icon(
+                            FontAwesomeIcons.twitter,
+                            color: Color(0xFF393A56),
+                          ),
+                          Icon(
+                            FontAwesomeIcons.google,
+                            color: Color(0xFF393A56),
+                          ),
+                          Icon(
+                            FontAwesomeIcons.apple,
+                            color: Color(0xFF393A56),
+                          ),
                         ],
                       ),
                       const SizedBox(
@@ -312,8 +358,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           const Text(
                             'Already have an account? ',
                             style: TextStyle(
-                              color: Colors.black45,
+                              color: Colors.black,
                               fontFamily: 'Raleway',
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                           GestureDetector(

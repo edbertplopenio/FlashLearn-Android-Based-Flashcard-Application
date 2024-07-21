@@ -170,8 +170,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   TextField(
                     decoration: InputDecoration(
                       labelText: 'Set Name',
-                      errorText:
-                          nameExists ? 'Set name already exists' : null,
+                      labelStyle: TextStyle(fontFamily: 'Raleway'),
+                      errorText: nameExists ? 'Set name already exists' : null,
+                      errorStyle: TextStyle(fontFamily: 'Raleway'),
                     ),
                     onChanged: (value) {
                       setState(() {
@@ -184,18 +185,20 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               actions: <Widget>[
                 TextButton(
-                  child: const Text('Cancel'),
+                  child: const Text('Cancel', style: TextStyle(fontFamily: 'Raleway')),
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
                 ),
                 TextButton(
-                  child: const Text('Create'),
+                  child: const Text('Create', style: TextStyle(fontFamily: 'Raleway')),
                   onPressed: () {
                     if (setName.isNotEmpty && !nameExists) {
                       setState(() {
-                        String creationDate =
-                            DateTime.now().toLocal().toString().split(' ')[0];
+                        String creationDate = DateTime.now()
+                            .toLocal()
+                            .toString()
+                            .split(' ')[0];
                         flashcardSets.add(
                             FlashcardSet(name: setName, creationDate: creationDate));
                       });
@@ -217,7 +220,8 @@ class _HomeScreenState extends State<HomeScreen> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        final TextEditingController _controller = TextEditingController(text: flashcardSet.name);
+        final TextEditingController _controller =
+            TextEditingController(text: flashcardSet.name);
         String setName = flashcardSet.name;
         bool nameExists = false;
 
@@ -232,7 +236,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     controller: _controller,
                     decoration: InputDecoration(
                       labelText: 'New Set Name',
+                      labelStyle: TextStyle(fontFamily: 'Raleway'),
                       errorText: nameExists ? 'Set name already exists' : null,
+                      errorStyle: TextStyle(fontFamily: 'Raleway'),
                     ),
                     onChanged: (value) {
                       setState(() {
@@ -245,13 +251,13 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               actions: <Widget>[
                 TextButton(
-                  child: const Text('Cancel'),
+                  child: const Text('Cancel', style: TextStyle(fontFamily: 'Raleway')),
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
                 ),
                 TextButton(
-                  child: const Text('Rename'),
+                  child: const Text('Rename', style: TextStyle(fontFamily: 'Raleway')),
                   onPressed: () {
                     if (setName.isNotEmpty && !nameExists) {
                       _renameFlashcardSet(flashcardSet.name, setName);
@@ -272,17 +278,17 @@ class _HomeScreenState extends State<HomeScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Delete Flashcard Set'),
-          content: Text('Do you really want to delete "${flashcardSet.name}"?'),
+          title: const Text('Delete Flashcard Set', style: TextStyle(fontFamily: 'Raleway')),
+          content: Text('Do you really want to delete "${flashcardSet.name}"?', style: TextStyle(fontFamily: 'Raleway')),
           actions: <Widget>[
             TextButton(
-              child: const Text('Cancel'),
+              child: const Text('Cancel', style: TextStyle(fontFamily: 'Raleway')),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: const Text('Delete'),
+              child: const Text('Delete', style: TextStyle(fontFamily: 'Raleway')),
               onPressed: () {
                 Navigator.of(context).pop();
                 _deleteFlashcardSet(flashcardSet.name);
@@ -341,7 +347,10 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: lightColorScheme.primary,
-        title: const Text('Home'),
+        title: Text(
+          _currentIndex == 0 ? 'Home' : 'Flashcard Sets',
+          style: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.w800),
+        ),
       ),
       drawer: Drawer(
         child: ListView(
@@ -350,17 +359,18 @@ class _HomeScreenState extends State<HomeScreen> {
             UserAccountsDrawerHeader(
               accountName: Text(
                 userName,
-                style: TextStyle(fontFamily: 'Raleway'),
+                style: TextStyle(fontFamily: 'Raleway', fontWeight: FontWeight.bold,),
               ),
               accountEmail: null,
               currentAccountPicture: profileImagePath != null
                   ? CircleAvatar(
                       backgroundImage: kIsWeb
                           ? NetworkImage(profileImagePath!)
-                          : FileImage(File(profileImagePath!)) as ImageProvider<Object>,
+                          : FileImage(File(profileImagePath!))
+                              as ImageProvider<Object>,
                     )
                   : CircleAvatar(
-                      child: Icon(Icons.account_circle, size: 50),
+                      child: Icon(Icons.account_circle, size: 75),
                     ),
               decoration: BoxDecoration(
                 color: lightColorScheme.primary,
@@ -368,7 +378,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             ListTile(
               leading: const Icon(Icons.home),
-              title: const Text('Home', style: TextStyle(fontFamily: 'Raleway')),
+              title: const Text('Home', style: TextStyle(fontFamily: 'Raleway', fontWeight: FontWeight.bold,)),
               onTap: () {
                 Navigator.pop(context);
                 _pageController.jumpToPage(0);
@@ -376,7 +386,8 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             ListTile(
               leading: const Icon(Icons.view_list),
-              title: const Text('View Flashcard Sets', style: TextStyle(fontFamily: 'Raleway')),
+              title: const Text('View Flashcard Sets',
+                  style: TextStyle(fontFamily: 'Raleway', fontWeight: FontWeight.bold,)),
               onTap: () {
                 Navigator.pop(context);
                 setState(() {
@@ -387,7 +398,8 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             ListTile(
               leading: const Icon(Icons.account_circle),
-              title: const Text('Profile', style: TextStyle(fontFamily: 'Raleway')),
+              title: const Text('Profile',
+                  style: TextStyle(fontFamily: 'Raleway', fontWeight: FontWeight.bold,)),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(
@@ -395,7 +407,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   MaterialPageRoute(
                     builder: (context) => ProfileScreen(
                       onUserNameChanged: _updateUserName,
-                      onProfileImageChanged: _updateProfileImage, // Pass the callback here
+                      onProfileImageChanged:
+                          _updateProfileImage, // Pass the callback here
                     ),
                   ),
                 );
@@ -403,7 +416,8 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             ListTile(
               leading: const Icon(Icons.logout),
-              title: const Text('Logout', style: TextStyle(fontFamily: 'Raleway')),
+              title:
+                  const Text('Logout', style: TextStyle(fontFamily: 'Raleway', fontWeight: FontWeight.bold,)),
               onTap: () {
                 Navigator.pop(context);
                 _confirmLogout();
@@ -411,7 +425,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             ListTile(
               leading: const Icon(Icons.info),
-              title: const Text('About', style: TextStyle(fontFamily: 'Raleway')),
+              title: const Text('About', style: TextStyle(fontFamily: 'Raleway', fontWeight: FontWeight.bold,)),
               onTap: () {
                 // Navigate to the About screen
               },
@@ -448,6 +462,18 @@ class _HomeScreenState extends State<HomeScreen> {
                             decoration: BoxDecoration(
                               color: Color.fromARGB(255, 200, 155, 87),
                               borderRadius: BorderRadius.circular(12.0),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.white, // Light shadow
+                                  offset: Offset(-8, -8),
+                                  blurRadius: 15,
+                                ),
+                                BoxShadow(
+                                  color: Color(0xFFBEBEBE), // Dark shadow
+                                  offset: Offset(8, 8),
+                                  blurRadius: 15,
+                                ),
+                              ],
                             ),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -477,6 +503,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     fontSize: 95,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white,
+                                    fontFamily: 'Raleway',
                                   ),
                                 ),
                               ],
@@ -490,6 +517,18 @@ class _HomeScreenState extends State<HomeScreen> {
                             decoration: BoxDecoration(
                               color: Color.fromARGB(255, 200, 155, 87),
                               borderRadius: BorderRadius.circular(12.0),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.white, // Light shadow
+                                  offset: Offset(-8, -8),
+                                  blurRadius: 15,
+                                ),
+                                BoxShadow(
+                                  color: Color(0xFFBEBEBE), // Dark shadow
+                                  offset: Offset(8, 8),
+                                  blurRadius: 15,
+                                ),
+                              ],
                             ),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -519,6 +558,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     fontSize: 95,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white,
+                                    fontFamily: 'Raleway',
                                   ),
                                 ),
                               ],
@@ -537,10 +577,22 @@ class _HomeScreenState extends State<HomeScreen> {
                               itemBuilder: (context, index) {
                                 final factIndex = index % flashcardFacts.length;
                                 return Container(
-                                  margin: EdgeInsets.all(8.0),
+                                  margin: EdgeInsets.all(18.0),
                                   decoration: BoxDecoration(
                                     color: Color.fromARGB(255, 200, 155, 87),
                                     borderRadius: BorderRadius.circular(12.0),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.white, // Light shadow
+                                        offset: Offset(-8, -8),
+                                        blurRadius: 15,
+                                      ),
+                                      BoxShadow(
+                                        color: Color(0xFFBEBEBE), // Dark shadow
+                                        offset: Offset(8, 8),
+                                        blurRadius: 15,
+                                      ),
+                                    ],
                                   ),
                                   child: Center(
                                     child: Padding(
@@ -548,7 +600,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       child: Text(
                                         flashcardFacts[factIndex],
                                         style: TextStyle(
-                                          fontSize: 16,
+                                          fontSize: 14,
                                           fontWeight: FontWeight.bold,
                                           fontFamily: 'Raleway',
                                           color: Colors.white,
@@ -577,11 +629,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   onChanged: _onSearchQueryChanged,
                   decoration: InputDecoration(
                     hintText: 'Search Flashcard Sets...',
+                    hintStyle: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.w600),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12.0),
                     ),
                     prefixIcon: Icon(Icons.search),
                   ),
+                  style: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.w700),
                 ),
               ),
               Expanded(
@@ -624,7 +678,7 @@ class _HomeScreenState extends State<HomeScreen> {
           children: <Widget>[
             Spacer(),
             IconButton(
-              icon: Icon(Icons.home),
+              icon: Icon(Icons.home, color: _currentIndex == 0 ? Colors.white : Colors.grey),
               onPressed: () {
                 setState(() {
                   _currentIndex = 0;
@@ -634,7 +688,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             Spacer(flex: 2),
             IconButton(
-              icon: Icon(Icons.view_list),
+              icon: Icon(Icons.view_list, color: _currentIndex == 1 ? Colors.white : Colors.grey),
               onPressed: () {
                 setState(() {
                   _currentIndex = 1;
@@ -652,9 +706,22 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildWelcomeMessageCard() {
     return FractionallySizedBox(
       widthFactor: 1, // 100% width of the screen
-      child: Card(
-        shape: RoundedRectangleBorder(
+      child: Container(
+        decoration: BoxDecoration(
+          color: Color.fromARGB(255, 200, 155, 87), // Background color of the card
           borderRadius: BorderRadius.circular(12.0),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.white, // Light shadow
+              offset: Offset(-8, -8),
+              blurRadius: 15,
+            ),
+            BoxShadow(
+              color: Color(0xFFBEBEBE), // Dark shadow
+              offset: Offset(8, 8),
+              blurRadius: 15,
+            ),
+          ],
         ),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -685,7 +752,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
         ),
-        color: Color.fromARGB(255, 200, 155, 87), // Background color of the card
       ),
     );
   }
@@ -720,6 +786,18 @@ class _HomeScreenState extends State<HomeScreen> {
               end: Alignment.bottomRight,
             ),
             borderRadius: BorderRadius.circular(12.0),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.white, // Light shadow
+                offset: Offset(-8, -8),
+                blurRadius: 15,
+              ),
+              BoxShadow(
+                color: Color(0xFFBEBEBE), // Dark shadow
+                offset: Offset(8, 8),
+                blurRadius: 15,
+              ),
+            ],
           ),
           padding: const EdgeInsets.all(16.0),
           child: Row(
@@ -767,7 +845,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: <Widget>[
                           ListTile(
                             leading: Icon(Icons.edit),
-                            title: Text('Rename'),
+                            title: Text('Rename', style: TextStyle(fontFamily: 'Raleway')),
                             onTap: () {
                               Navigator.pop(context);
                               _showRenameSetDialog(flashcardSet);
@@ -775,7 +853,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           ListTile(
                             leading: Icon(Icons.delete),
-                            title: Text('Delete'),
+                            title: Text('Delete', style: TextStyle(fontFamily: 'Raleway')),
                             onTap: () {
                               Navigator.pop(context);
                               _showDeleteConfirmationDialog(flashcardSet);

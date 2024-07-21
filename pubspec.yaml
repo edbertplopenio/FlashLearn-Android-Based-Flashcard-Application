@@ -23,6 +23,7 @@ dependencies:
   json_annotation: ^4.9.0
   vertical_card_pager: ^1.6.2
   image_picker: ^1.1.2
+  flutter_spinkit: ^5.2.1
 
 dev_dependencies:
   flutter_test:

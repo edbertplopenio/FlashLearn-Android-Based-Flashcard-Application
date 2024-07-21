@@ -19,6 +19,7 @@ class _SignInScreenState extends State<SignInScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool rememberPassword = true;
+  bool _obscurePassword = true;
 
   @override
   void dispose() {
@@ -80,6 +81,23 @@ class _SignInScreenState extends State<SignInScreen> {
     );
   }
 
+  String? _validateEmail(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter Email';
+    }
+    if (!RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$").hasMatch(value)) {
+      return 'Please enter a valid email address';
+    }
+    return null;
+  }
+
+  String? _validatePassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter Password';
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
@@ -122,27 +140,22 @@ class _SignInScreenState extends State<SignInScreen> {
                       ),
                       TextFormField(
                         controller: _emailController,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter Email';
-                          }
-                          return null;
-                        },
+                        validator: _validateEmail,
                         decoration: InputDecoration(
-                          label: const Text('Email', style: TextStyle(fontFamily: 'Raleway')),
+                          label: const Text('Email', style: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.w600)),
                           hintText: 'Enter Email',
                           hintStyle: const TextStyle(
                             color: Colors.black26,
                           ),
                           border: OutlineInputBorder(
                             borderSide: const BorderSide(
-                              color: Colors.black12, // Default border color
+                              color: Colors.black26, // Default border color
                             ),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderSide: const BorderSide(
-                              color: Colors.black12, // Default border color
+                              color: Colors.black26, // Default border color
                             ),
                             borderRadius: BorderRadius.circular(10),
                           ),
@@ -153,31 +166,36 @@ class _SignInScreenState extends State<SignInScreen> {
                       ),
                       TextFormField(
                         controller: _passwordController,
-                        obscureText: true,
+                        obscureText: _obscurePassword,
                         obscuringCharacter: '*',
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter Password';
-                          }
-                          return null;
-                        },
+                        validator: _validatePassword,
                         decoration: InputDecoration(
-                          label: const Text('Password', style: TextStyle(fontFamily: 'Raleway')),
+                          label: const Text('Password', style: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.w600)),
                           hintText: 'Enter Password',
                           hintStyle: const TextStyle(
                             color: Colors.black26,
                           ),
                           border: OutlineInputBorder(
                             borderSide: const BorderSide(
-                              color: Colors.black12, // Default border color
+                              color: Colors.black26, // Default border color
                             ),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderSide: const BorderSide(
-                              color: Colors.black12, // Default border color
+                              color: Colors.black26, // Default border color
                             ),
                             borderRadius: BorderRadius.circular(10),
+                          ),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _obscurePassword = !_obscurePassword;
+                              });
+                            },
                           ),
                         ),
                       ),
@@ -203,19 +221,10 @@ class _SignInScreenState extends State<SignInScreen> {
                                 style: TextStyle(
                                   color: Colors.black45,
                                   fontFamily: 'Raleway',
+                                  fontWeight: FontWeight.w600
                                 ),
                               ),
                             ],
-                          ),
-                          GestureDetector(
-                            child: Text(
-                              'Forget password?',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: lightColorScheme.primary,
-                                fontFamily: 'Raleway',
-                              ),
-                            ),
                           ),
                         ],
                       ),
@@ -230,7 +239,7 @@ class _SignInScreenState extends State<SignInScreen> {
                               _signIn();
                             }
                           },
-                          child: const Text('Sign in', style: TextStyle(fontFamily: 'Raleway')),
+                          child: const Text('Sign in', style: TextStyle(fontFamily: 'Raleway',)),
                         ),
                       ),
                       const SizedBox(
@@ -253,8 +262,9 @@ class _SignInScreenState extends State<SignInScreen> {
                             child: Text(
                               'Sign in with',
                               style: TextStyle(
-                                color: Colors.black45,
+                                color: Colors.black,
                                 fontFamily: 'Raleway',
+                                fontWeight: FontWeight.w600
                               ),
                             ),
                           ),
@@ -272,10 +282,22 @@ class _SignInScreenState extends State<SignInScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          Logo(FontAwesomeIcons.facebook),
-                          Logo(FontAwesomeIcons.twitter),
-                          Logo(FontAwesomeIcons.google),
-                          Logo(FontAwesomeIcons.apple),
+                          Icon(
+                            FontAwesomeIcons.facebook,
+                            color: Color(0xFF393A56),
+                          ),
+                          Icon(
+                            FontAwesomeIcons.twitter,
+                            color: Color(0xFF393A56),
+                          ),
+                          Icon(
+                            FontAwesomeIcons.google,
+                            color: Color(0xFF393A56),
+                          ),
+                          Icon(
+                            FontAwesomeIcons.apple,
+                            color: Color(0xFF393A56),
+                          ),
                         ],
                       ),
                       const SizedBox(
@@ -287,8 +309,9 @@ class _SignInScreenState extends State<SignInScreen> {
                           const Text(
                             'Don\'t have an account? ',
                             style: TextStyle(
-                              color: Colors.black45,
+                              color: Colors.black,
                               fontFamily: 'Raleway',
+                              fontWeight: FontWeight.w600
                             ),
                           ),
                           GestureDetector(
