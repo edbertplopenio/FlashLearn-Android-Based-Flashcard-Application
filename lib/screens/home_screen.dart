@@ -10,6 +10,7 @@ import '../models/flashcard_set.dart';
 import '../models/flashcard.dart';
 import '../screens/welcome_screen.dart';
 import 'profile_screen.dart';
+import 'about_us_screen.dart'; // Import the about us screen
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -178,9 +179,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   TextField(
                     decoration: InputDecoration(
                       labelText: 'Set Name',
-                      labelStyle: TextStyle(fontFamily: 'Raleway'),
+                      labelStyle: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.bold),
                       errorText: nameExists ? 'Set name already exists' : null,
-                      errorStyle: TextStyle(fontFamily: 'Raleway'),
+                      errorStyle: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.bold),
                     ),
                     onChanged: (value) {
                       setState(() {
@@ -193,13 +194,13 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               actions: <Widget>[
                 TextButton(
-                  child: const Text('Cancel', style: TextStyle(fontFamily: 'Raleway')),
+                  child: const Text('Cancel', style: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.bold)),
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
                 ),
                 TextButton(
-                  child: const Text('Create', style: TextStyle(fontFamily: 'Raleway')),
+                  child: const Text('Create', style: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.bold)),
                   onPressed: () {
                     if (setName.isNotEmpty && !nameExists) {
                       setState(() {
@@ -433,9 +434,13 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             ListTile(
               leading: const Icon(Icons.info),
-              title: const Text('About', style: TextStyle(fontFamily: 'Raleway', fontWeight: FontWeight.bold,)),
+              title: const Text('About Us', style: TextStyle(fontFamily: 'Raleway', fontWeight: FontWeight.bold,)),
               onTap: () {
-                // Navigate to the About screen
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const AboutUsScreen()), // Navigate to AboutUsScreen
+                );
               },
             ),
           ],

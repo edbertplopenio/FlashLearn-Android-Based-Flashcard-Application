@@ -86,7 +86,7 @@ class _FlashcardSetScreenState extends State<FlashcardSetScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
-                    child: ElevatedButton(
+                    child: HoverButton(
                       onPressed: () {
                         Navigator.push(
                           context,
@@ -98,58 +98,26 @@ class _FlashcardSetScreenState extends State<FlashcardSetScreen> {
                           ),
                         );
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFFC89B57),
-                        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        shadowColor: Colors.amber,
-                        elevation: 20,
-                      ),
                       child: Text(
                         'Practice Cards',
                         style: TextStyle(
                           fontSize: 16,
                           fontFamily: 'Raleway',
                           color: Colors.white,
-                          shadows: [
-                            Shadow(
-                              blurRadius: 10.0,
-                              color: Colors.amber,
-                              offset: Offset(0, 0),
-                            ),
-                          ],
                         ),
                       ),
                     ),
                   ),
                   SizedBox(width: 16), // Space between buttons
                   Expanded(
-                    child: ElevatedButton(
+                    child: HoverButton(
                       onPressed: _addFlashcard,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFFC89B57),
-                        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        shadowColor: Colors.amber,
-                        elevation: 20,
-                      ),
                       child: Text(
                         'Add Card',
                         style: TextStyle(
                           fontSize: 16,
                           fontFamily: 'Raleway',
                           color: Colors.white,
-                          shadows: [
-                            Shadow(
-                              blurRadius: 10.0,
-                              color: Colors.amber,
-                              offset: Offset(0, 0),
-                            ),
-                          ],
                         ),
                       ),
                     ),
@@ -228,11 +196,11 @@ class _FlashcardSetScreenState extends State<FlashcardSetScreen> {
                 return [
                   PopupMenuItem(
                     value: 'edit',
-                    child: Text('Edit', style: TextStyle(fontFamily: 'Raleway')),
+                    child: Text('Edit', style: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.bold)),
                   ),
                   PopupMenuItem(
                     value: 'delete',
-                    child: Text('Delete', style: TextStyle(fontFamily: 'Raleway')),
+                    child: Text('Delete', style: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.bold)),
                   ),
                 ];
               },
@@ -251,7 +219,7 @@ class _FlashcardSetScreenState extends State<FlashcardSetScreen> {
         String answer = '';
 
         return AlertDialog(
-          title: Text('Add Flashcard', style: TextStyle(fontFamily: 'Raleway')),
+          title: Text('Add Flashcard', style: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.bold)),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
@@ -275,13 +243,13 @@ class _FlashcardSetScreenState extends State<FlashcardSetScreen> {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('Cancel', style: TextStyle(fontFamily: 'Raleway')),
+              child: Text('Cancel', style: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.bold)),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text('Add', style: TextStyle(fontFamily: 'Raleway')),
+              child: Text('Add', style: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.bold)),
               onPressed: () {
                 if (question.isNotEmpty && answer.isNotEmpty) {
                   setState(() {
@@ -306,7 +274,7 @@ class _FlashcardSetScreenState extends State<FlashcardSetScreen> {
         String editedAnswer = flashcard.answer;
 
         return AlertDialog(
-          title: Text('Edit Flashcard', style: TextStyle(fontFamily: 'Raleway')),
+          title: Text('Edit Flashcard', style: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.bold)),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
@@ -332,13 +300,13 @@ class _FlashcardSetScreenState extends State<FlashcardSetScreen> {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('Cancel', style: TextStyle(fontFamily: 'Raleway')),
+              child: Text('Cancel', style: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.bold)),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text('Save', style: TextStyle(fontFamily: 'Raleway')),
+              child: Text('Save', style: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.bold)),
               onPressed: () {
                 if (editedQuestion.isNotEmpty && editedAnswer.isNotEmpty) {
                   setState(() {
@@ -361,17 +329,17 @@ class _FlashcardSetScreenState extends State<FlashcardSetScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Delete Flashcard', style: TextStyle(fontFamily: 'Raleway')),
-          content: Text('Are you sure you want to delete this flashcard?', style: TextStyle(fontFamily: 'Raleway')),
+          title: Text('Delete Flashcard', style: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.bold)),
+          content: Text('Are you sure you want to delete this flashcard?', style: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.bold)),
           actions: <Widget>[
             TextButton(
-              child: Text('Cancel', style: TextStyle(fontFamily: 'Raleway')),
+              child: Text('Cancel', style: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.bold)),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text('Delete', style: TextStyle(fontFamily: 'Raleway')),
+              child: Text('Delete', style: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.bold)),
               onPressed: () {
                 setState(() {
                   flashcards.remove(flashcard);
@@ -384,5 +352,61 @@ class _FlashcardSetScreenState extends State<FlashcardSetScreen> {
         );
       },
     );
+  }
+}
+
+class HoverButton extends StatefulWidget {
+  final VoidCallback onPressed;
+  final Widget child;
+
+  const HoverButton({Key? key, required this.onPressed, required this.child}) : super(key: key);
+
+  @override
+  _HoverButtonState createState() => _HoverButtonState();
+}
+
+class _HoverButtonState extends State<HoverButton> {
+  bool _hovering = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      onEnter: (_) => _setHovering(true),
+      onExit: (_) => _setHovering(false),
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 200),
+        decoration: BoxDecoration(
+          color: Color(0xFFC89B57),
+          borderRadius: BorderRadius.circular(8.0),
+          boxShadow: _hovering
+              ? [
+                  BoxShadow(
+                    color: Color(0xFFC89B57),
+                    blurRadius: 20.0,
+                    spreadRadius: 1.0,
+                  ),
+                ]
+              : [],
+        ),
+        child: ElevatedButton(
+          onPressed: widget.onPressed,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.transparent,
+            shadowColor: Colors.transparent,
+            padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+          ),
+          child: widget.child,
+        ),
+      ),
+    );
+  }
+
+  void _setHovering(bool hovering) {
+    setState(() {
+      _hovering = hovering;
+    });
   }
 }

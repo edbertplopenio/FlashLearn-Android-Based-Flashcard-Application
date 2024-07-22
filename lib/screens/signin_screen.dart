@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import './signup_screen.dart';
-import './home_screen.dart';
+import 'signup_screen.dart';
+import 'home_screen.dart';
 import '../widgets/custom_scaffold.dart';
 import '../theme/theme.dart';
 import '../widgets/logo_widget.dart';
