@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flip_card/flip_card.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/flashcard.dart';
+import '../theme/theme.dart';
 
 class FlashcardPracticeScreen extends StatefulWidget {
   final List<Flashcard> flashcards;
@@ -20,6 +22,7 @@ class _FlashcardPracticeScreenState extends State<FlashcardPracticeScreen> {
   bool _isShuffled = false;
   bool _isNext = true;
   bool _showAnswer = false;
+  Color themeColor = lightColorScheme.primary;
 
   final GlobalKey<FlipCardState> cardKey = GlobalKey<FlipCardState>();
   late List<Flashcard> _originalFlashcards;
@@ -28,6 +31,15 @@ class _FlashcardPracticeScreenState extends State<FlashcardPracticeScreen> {
   void initState() {
     super.initState();
     _originalFlashcards = List.from(widget.flashcards);
+    _loadThemeColor();
+  }
+
+  Future<void> _loadThemeColor() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      final int colorValue = prefs.getInt('theme_color') ?? lightColorScheme.primary.value;
+      themeColor = Color(colorValue);
+    });
   }
 
   void _nextCard() {
@@ -120,7 +132,11 @@ class _FlashcardPracticeScreenState extends State<FlashcardPracticeScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Practice Cards', style: TextStyle(fontFamily: 'Raleway', fontWeight: FontWeight.bold)),
+        title: Text(
+          'Practice Cards',
+          style: TextStyle(fontFamily: 'Raleway', fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: themeColor,
       ),
       body: Center(
         child: Column(
@@ -130,16 +146,22 @@ class _FlashcardPracticeScreenState extends State<FlashcardPracticeScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Column(
                 children: [
-                  Text(widget.setTitle, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'Raleway')),
+                  Text(
+                    widget.setTitle,
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'Raleway'),
+                  ),
                   SizedBox(height: 5),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text('${currentIndex + 1} / ${widget.flashcards.length}', style: TextStyle(fontSize: 13, fontFamily: 'Raleway', fontWeight: FontWeight.bold)),
+                      Text(
+                        '${currentIndex + 1} / ${widget.flashcards.length}',
+                        style: TextStyle(fontSize: 13, fontFamily: 'Raleway', fontWeight: FontWeight.bold),
+                      ),
                     ],
                   ),
                   SizedBox(height: 10),
-                  LinearProgressIndicator(value: progress),
+                  LinearProgressIndicator(value: progress, color: themeColor),
                 ],
               ),
             ),
@@ -223,12 +245,12 @@ class _FlashcardPracticeScreenState extends State<FlashcardPracticeScreen> {
               children: [
                 IconButton(
                   icon: Icon(_isPlaying ? Icons.pause : Icons.play_arrow),
-                  color: _isPlaying ?Color.fromARGB(255, 200, 155, 87) : Colors.black,
+                  color: _isPlaying ? themeColor : Colors.black,
                   onPressed: _togglePlay,
                 ),
                 IconButton(
                   icon: Icon(Icons.shuffle),
-                  color: _isShuffled ?Color.fromARGB(255, 200, 155, 87) : Colors.black,
+                  color: _isShuffled ? themeColor : Colors.black,
                   onPressed: _shuffleCards,
                 ),
               ],
@@ -243,6 +265,7 @@ class _FlashcardPracticeScreenState extends State<FlashcardPracticeScreen> {
                       onPressed: _previousCard,
                       style: ElevatedButton.styleFrom(
                         padding: EdgeInsets.symmetric(vertical: 16.0),
+                        backgroundColor: themeColor,
                       ),
                       child: Text('Previous', style: TextStyle(fontFamily: 'Raleway', fontSize: 16)),
                     ),
@@ -253,6 +276,7 @@ class _FlashcardPracticeScreenState extends State<FlashcardPracticeScreen> {
                       onPressed: _nextCard,
                       style: ElevatedButton.styleFrom(
                         padding: EdgeInsets.symmetric(vertical: 16.0),
+                        backgroundColor: themeColor,
                       ),
                       child: Text('Next', style: TextStyle(fontFamily: 'Raleway', fontSize: 16)),
                     ),

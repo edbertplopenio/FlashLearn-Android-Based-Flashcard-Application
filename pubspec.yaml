@@ -15,7 +15,6 @@ dependencies:
   font_awesome_flutter: ^10.1.0
   shared_preferences: ^2.2.3
   flutter_staggered_grid_view: ^0.7.0
-  staggered_grid_view_flutter: ^0.0.4
   flip_card: ^0.7.0
   curved_navigation_bar: ^1.0.6
   pie_chart: ^5.4.0
@@ -37,6 +36,7 @@ flutter:
     - assets/images/front1.png
     - assets/images/front2.png
     - assets/images/front3.png
+    - assets/images/front4.png
     - assets/images/back.png
   fonts:
     - family: Raleway

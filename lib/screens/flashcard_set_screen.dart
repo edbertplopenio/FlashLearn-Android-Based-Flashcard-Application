@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import '../models/flashcard.dart';
+import '../theme/theme.dart';
 import 'flashcard_practice_screen.dart'; // Import the practice screen
 
 class FlashcardSetScreen extends StatefulWidget {
@@ -17,11 +18,21 @@ class FlashcardSetScreen extends StatefulWidget {
 class _FlashcardSetScreenState extends State<FlashcardSetScreen> {
   List<Flashcard> flashcards = [];
   String userId = '';
+  Color themeColor = lightColorScheme.primary;
 
   @override
   void initState() {
     super.initState();
     _loadUserIdAndFlashcards();
+    _loadThemeColor();
+  }
+
+  Future<void> _loadThemeColor() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      final int colorValue = prefs.getInt('theme_color') ?? lightColorScheme.primary.value;
+      themeColor = Color(colorValue);
+    });
   }
 
   Future<void> _loadUserIdAndFlashcards() async {
@@ -59,6 +70,7 @@ class _FlashcardSetScreenState extends State<FlashcardSetScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.setName, style: TextStyle(fontFamily: 'Raleway', fontWeight: FontWeight.bold)),
+        backgroundColor: themeColor,
       ),
       body: Stack(
         children: [
@@ -87,16 +99,21 @@ class _FlashcardSetScreenState extends State<FlashcardSetScreen> {
                 children: [
                   Expanded(
                     child: HoverButton(
+                      color: themeColor,
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => FlashcardPracticeScreen(
-                              flashcards: flashcards,
-                              setTitle: widget.setName, // Pass the setTitle here
+                        if (flashcards.length < 3) {
+                          _showMinimumCardsDialog();
+                        } else {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => FlashcardPracticeScreen(
+                                flashcards: flashcards,
+                                setTitle: widget.setName, // Pass the setTitle here
+                              ),
                             ),
-                          ),
-                        );
+                          );
+                        }
                       },
                       child: Text(
                         'Practice Cards',
@@ -111,6 +128,7 @@ class _FlashcardSetScreenState extends State<FlashcardSetScreen> {
                   SizedBox(width: 16), // Space between buttons
                   Expanded(
                     child: HoverButton(
+                      color: themeColor,
                       onPressed: _addFlashcard,
                       child: Text(
                         'Add Card',
@@ -134,7 +152,7 @@ class _FlashcardSetScreenState extends State<FlashcardSetScreen> {
   Widget _buildFlashcardItem(Flashcard flashcard) {
     return Container(
       decoration: BoxDecoration(
-        color: Color(0xFFC89B57),
+        color: themeColor,
         borderRadius: BorderRadius.circular(16.0),
         boxShadow: [
           BoxShadow(
@@ -196,11 +214,11 @@ class _FlashcardSetScreenState extends State<FlashcardSetScreen> {
                 return [
                   PopupMenuItem(
                     value: 'edit',
-                    child: Text('Edit', style: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.bold)),
+                    child: Text('Edit', style: TextStyle(fontFamily: 'Raleway', fontWeight: FontWeight.bold)),
                   ),
                   PopupMenuItem(
                     value: 'delete',
-                    child: Text('Delete', style: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.bold)),
+                    child: Text('Delete', style: TextStyle(fontFamily: 'Raleway', fontWeight: FontWeight.bold)),
                   ),
                 ];
               },
@@ -219,7 +237,7 @@ class _FlashcardSetScreenState extends State<FlashcardSetScreen> {
         String answer = '';
 
         return AlertDialog(
-          title: Text('Add Flashcard', style: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.bold)),
+          title: Text('Add Flashcard', style: TextStyle(fontFamily: 'Raleway', fontWeight: FontWeight.bold)),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
@@ -243,13 +261,13 @@ class _FlashcardSetScreenState extends State<FlashcardSetScreen> {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('Cancel', style: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.bold)),
+              child: Text('Cancel', style: TextStyle(fontFamily: 'Raleway', fontWeight: FontWeight.bold, color: themeColor)),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text('Add', style: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.bold)),
+              child: Text('Add', style: TextStyle(fontFamily: 'Raleway', fontWeight: FontWeight.bold, color: themeColor)),
               onPressed: () {
                 if (question.isNotEmpty && answer.isNotEmpty) {
                   setState(() {
@@ -274,7 +292,7 @@ class _FlashcardSetScreenState extends State<FlashcardSetScreen> {
         String editedAnswer = flashcard.answer;
 
         return AlertDialog(
-          title: Text('Edit Flashcard', style: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.bold)),
+          title: Text('Edit Flashcard', style: TextStyle(fontFamily: 'Raleway', fontWeight: FontWeight.bold)),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
@@ -300,13 +318,13 @@ class _FlashcardSetScreenState extends State<FlashcardSetScreen> {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('Cancel', style: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.bold)),
+              child: Text('Cancel', style: TextStyle(fontFamily: 'Raleway', fontWeight: FontWeight.bold, color: themeColor)),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text('Save', style: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.bold)),
+              child: Text('Save', style: TextStyle(fontFamily: 'Raleway', fontWeight: FontWeight.bold, color: themeColor)),
               onPressed: () {
                 if (editedQuestion.isNotEmpty && editedAnswer.isNotEmpty) {
                   setState(() {
@@ -329,17 +347,17 @@ class _FlashcardSetScreenState extends State<FlashcardSetScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Delete Flashcard', style: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.bold)),
-          content: Text('Are you sure you want to delete this flashcard?', style: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.bold)),
+          title: Text('Delete Flashcard', style: TextStyle(fontFamily: 'Raleway', fontWeight: FontWeight.bold)),
+          content: Text('Are you sure you want to delete this flashcard?', style: TextStyle(fontFamily: 'Raleway', fontWeight: FontWeight.bold)),
           actions: <Widget>[
             TextButton(
-              child: Text('Cancel', style: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.bold)),
+              child: Text('Cancel', style: TextStyle(fontFamily: 'Raleway', fontWeight: FontWeight.bold, color: themeColor)),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text('Delete', style: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.bold)),
+              child: Text('Delete', style: TextStyle(fontFamily: 'Raleway', fontWeight: FontWeight.bold, color: themeColor)),
               onPressed: () {
                 setState(() {
                   flashcards.remove(flashcard);
@@ -353,13 +371,34 @@ class _FlashcardSetScreenState extends State<FlashcardSetScreen> {
       },
     );
   }
+
+  void _showMinimumCardsDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Not enough flashcards', style: TextStyle(fontFamily: 'Raleway', fontWeight: FontWeight.bold)),
+          content: Text('You need at least 3 flashcards to start practicing.', style: TextStyle(fontFamily: 'Raleway', fontWeight: FontWeight.bold)),
+          actions: <Widget>[
+            TextButton(
+              child: Text('OK', style: TextStyle(fontFamily: 'Raleway', fontWeight: FontWeight.bold, color: themeColor)),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 }
 
 class HoverButton extends StatefulWidget {
   final VoidCallback onPressed;
   final Widget child;
+  final Color color;
 
-  const HoverButton({Key? key, required this.onPressed, required this.child}) : super(key: key);
+  const HoverButton({Key? key, required this.onPressed, required this.child, required this.color}) : super(key: key);
 
   @override
   _HoverButtonState createState() => _HoverButtonState();
@@ -376,12 +415,12 @@ class _HoverButtonState extends State<HoverButton> {
       child: AnimatedContainer(
         duration: Duration(milliseconds: 200),
         decoration: BoxDecoration(
-          color: Color(0xFFC89B57),
+          color: widget.color,
           borderRadius: BorderRadius.circular(8.0),
           boxShadow: _hovering
               ? [
                   BoxShadow(
-                    color: Color(0xFFC89B57),
+                    color: widget.color,
                     blurRadius: 20.0,
                     spreadRadius: 1.0,
                   ),

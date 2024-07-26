@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'FlashLearn',
       theme: lightMode,
-      home: const HomeScreen(), // Start with SplashScreen
+      home: const SplashScreen(), // Start with SplashScreen
     );
   }
 }

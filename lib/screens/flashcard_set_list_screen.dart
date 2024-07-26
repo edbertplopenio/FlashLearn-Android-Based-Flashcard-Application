@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import '../models/flashcard_set.dart';
+import '../theme/theme.dart';
 import 'flashcard_set_screen.dart';
 
 class FlashcardSetListScreen extends StatefulWidget {
@@ -16,11 +17,21 @@ class FlashcardSetListScreen extends StatefulWidget {
 
 class _FlashcardSetListScreenState extends State<FlashcardSetListScreen> {
   List<FlashcardSet> flashcardSets = [];
+  Color themeColor = lightColorScheme.primary;
 
   @override
   void initState() {
     super.initState();
+    _loadThemeColor();
     _loadFlashcardSets();
+  }
+
+  Future<void> _loadThemeColor() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      final int colorValue = prefs.getInt('theme_color') ?? lightColorScheme.primary.value;
+      themeColor = Color(colorValue);
+    });
   }
 
   Future<void> _loadFlashcardSets() async {
@@ -137,8 +148,8 @@ class _FlashcardSetListScreenState extends State<FlashcardSetListScreen> {
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                Color.fromARGB(255, 200, 155, 87),
-                Color.fromARGB(255, 235, 200, 150),
+                themeColor,
+                themeColor.withOpacity(0.8),
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -204,7 +215,7 @@ class _FlashcardSetListScreenState extends State<FlashcardSetListScreen> {
         onPressed: _showCreateSetDialog,
         tooltip: 'Create Flashcard Set',
         child: const Icon(Icons.add),
-        backgroundColor: Color.fromARGB(255, 200, 155, 87),
+        backgroundColor: themeColor,
         shape: CircleBorder(),
       ),
     );

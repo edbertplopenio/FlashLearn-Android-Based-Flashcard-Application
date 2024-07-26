@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import '../theme/theme.dart';
 
 class ProfileScreen extends StatefulWidget {
   final Function(String) onUserNameChanged;
@@ -29,6 +30,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool _obscureOldPassword = true;
   bool _obscureNewPassword = true;
   String? _savedPassword;
+  Color themeColor = lightColorScheme.primary;
 
   @override
   void initState() {
@@ -38,6 +40,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _oldPasswordController = TextEditingController();
     _newPasswordController = TextEditingController();
     _loadProfileData();
+    _loadThemeColor();
+  }
+
+  Future<void> _loadThemeColor() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      final int colorValue = prefs.getInt('theme_color') ?? lightColorScheme.primary.value;
+      themeColor = Color(colorValue);
+    });
   }
 
   Future<void> _loadProfileData() async {
@@ -173,7 +184,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       return 'Please enter your email';
     }
     final emailRegExp = RegExp(
-      r'^[a-zA-Z0-9]+[a-zA-Z0-9._%+-]*@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+      r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+$"
     );
     if (!emailRegExp.hasMatch(value)) {
       return 'Please enter a valid email';
@@ -226,7 +237,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit Profile', style: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.bold)),
+        title: const Text('Edit Profile', style: TextStyle(fontFamily: 'Raleway', fontWeight: FontWeight.bold)),
+        backgroundColor: themeColor,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -274,7 +286,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 controller: _emailController,
                 decoration: const InputDecoration(
                   labelText: 'Email',
-                  labelStyle: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.bold),
+                  labelStyle: TextStyle(fontFamily: 'Raleway', fontWeight: FontWeight.bold),
                 ),
                 keyboardType: TextInputType.emailAddress,
                 validator: _validateEmail,
@@ -284,7 +296,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 controller: _oldPasswordController,
                 decoration: InputDecoration(
                   labelText: 'Password',
-                  labelStyle: const TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.bold),
+                  labelStyle: const TextStyle(fontFamily: 'Raleway', fontWeight: FontWeight.bold),
                   suffixIcon: IconButton(
                     icon: Icon(
                       _obscureOldPassword ? Icons.visibility : Icons.visibility_off,
@@ -304,7 +316,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 controller: _newPasswordController,
                 decoration: InputDecoration(
                   labelText: 'New Password',
-                  labelStyle: const TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.bold),
+                  labelStyle: const TextStyle(fontFamily: 'Raleway', fontWeight: FontWeight.bold),
                   suffixIcon: IconButton(
                     icon: Icon(
                       _obscureNewPassword ? Icons.visibility : Icons.visibility_off,
@@ -323,6 +335,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ElevatedButton(
                 onPressed: _saveProfileData,
                 child: const Text('Save Profile', style: TextStyle(fontFamily: 'Raleway')),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: themeColor,
+                ),
               ),
             ],
           ),

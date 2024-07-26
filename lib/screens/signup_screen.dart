@@ -20,6 +20,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _passwordController = TextEditingController();
   bool agreePersonalData = true;
   bool _obscurePassword = true;
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -46,18 +47,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
         return AlertDialog(
           title: Text(
             'Success',
-            style: TextStyle(color: lightColorScheme.primary, fontFamily: 'Raleway'),
+            style: TextStyle(color: lightColorScheme.primary, fontFamily: 'Raleway',fontWeight: FontWeight.bold),
           ),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Text(message, style: TextStyle(fontFamily: 'Raleway')),
+                Text(message, style: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.bold)),
               ],
             ),
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text('OK', style: TextStyle(fontFamily: 'Raleway')),
+              child: const Text('OK', style: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.bold)),
               onPressed: () {
                 Navigator.of(context).pop();
                 Navigator.pushReplacement(
@@ -74,9 +75,55 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
+  Future<void> _showPersonalDataDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            'Personal Data Policy',
+            style: TextStyle(color: lightColorScheme.primary, fontFamily: 'Raleway'),
+          ),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(
+                  'Your personal data will be used to support your experience throughout this app, to manage access to your account, and for other purposes described in our privacy policy.',
+                  style: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 10),
+                Text(
+                  'We value your privacy and are committed to protecting your personal information. Your data will not be shared with third parties without your consent, except as required by law.',
+                  style: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 10),
+                Text(
+                  'For more details, please refer to our full privacy policy available on our website.',
+                  style: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Close', style: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.bold)),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   String? _validateName(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Please enter Full name';
+      return 'Please enter Full Name';
+    }
+    if (value.length < 3) {
+      return 'Full Name must be at least 3 characters long';
     }
     if (!RegExp(r"^[a-zA-Z\s]+$").hasMatch(value)) {
       return 'Please enter a valid name';
@@ -84,15 +131,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return null;
   }
 
-  String? _validateEmail(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Please enter Email';
-    }
-    if (!RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$").hasMatch(value)) {
-      return 'Please enter a valid email address';
-    }
-    return null;
+String? _validateEmail(String? value) {
+  if (value == null || value.isEmpty) {
+    return 'Please enter Email';
   }
+  // Improved email validation regex
+  if (!RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$").hasMatch(value)) {
+    return 'Please enter a valid email address';
+  }
+  return null;
+}
+
 
   String? _validatePassword(String? value) {
     if (value == null || value.isEmpty) {
@@ -108,6 +157,24 @@ class _SignUpScreenState extends State<SignUpScreen> {
       return 'Password must contain at least one number';
     }
     return null;
+  }
+
+  void _submitForm() async {
+    if (_formSignupKey.currentState!.validate() && agreePersonalData) {
+      setState(() {
+        _isLoading = true;
+      });
+      await Future.delayed(Duration(seconds: 3));
+      await _saveUserData();
+      setState(() {
+        _isLoading = false;
+      });
+      _showSuccessDialog('Account Created Successfully');
+    } else if (!agreePersonalData) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please agree to the processing of personal data')),
+      );
+    }
   }
 
   @override
@@ -259,12 +326,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               fontWeight: FontWeight.w600,
                             ),
                           ),
-                          Text(
-                            'Personal data',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: lightColorScheme.primary,
-                              fontFamily: 'Raleway',
+                          GestureDetector(
+                            onTap: _showPersonalDataDialog,
+                            child: Text(
+                              'Personal data',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: lightColorScheme.primary,
+                                fontFamily: 'Raleway',
+                              ),
                             ),
                           ),
                         ],
@@ -275,20 +345,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: () {
-                            if (_formSignupKey.currentState!.validate() &&
-                                agreePersonalData) {
-                              _saveUserData();
-                              _showSuccessDialog('Account Created Successfully');
-                            } else if (!agreePersonalData) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text(
-                                        'Please agree to the processing of personal data')),
-                              );
-                            }
-                          },
-                          child: const Text('Sign up', style: TextStyle(fontFamily: 'Raleway',)),
+                          onPressed: _isLoading ? null : _submitForm,
+                          child: _isLoading
+                              ? CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                )
+                              : const Text('Sign up', style: TextStyle(fontFamily: 'Raleway')),
                         ),
                       ),
                       const SizedBox(

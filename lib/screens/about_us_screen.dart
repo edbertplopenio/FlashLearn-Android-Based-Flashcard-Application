@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flip_card/flip_card.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'mission_screen.dart';
+import 'team_screen.dart';
+import 'contact_screen.dart';
+import 'privacy_screen.dart';
+import 'faq_screen.dart';
+import '../theme/theme.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -15,156 +22,135 @@ class AboutUsScreen extends StatefulWidget {
 }
 
 class _AboutUsScreenState extends State<AboutUsScreen> {
-  int? selectedIndex;
-  List<bool> isFrontList = [true, true, true];
-  List<GlobalKey<FlipCardState>> cardKeys = [
-    GlobalKey<FlipCardState>(),
-    GlobalKey<FlipCardState>(),
-    GlobalKey<FlipCardState>(),
-  ];
+  Color themeColor = lightColorScheme.primary;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadThemeColor();
+  }
+
+  Future<void> _loadThemeColor() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      final int colorValue = prefs.getInt('theme_color') ?? lightColorScheme.primary.value;
+      themeColor = Color(colorValue);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('About Us'),
-        backgroundColor: Color.fromARGB(255, 200, 155, 87),
+        title: const Text(
+          'About Us',
+          style: TextStyle(fontFamily: 'Raleway', fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: themeColor,
       ),
-      body: GestureDetector(
-        behavior: HitTestBehavior.translucent,
-        onTap: () {
-          setState(() {
-            selectedIndex = null;
-          });
-        },
-        child: Center(
-          child: Stack(
-            alignment: Alignment.center,
-            children: _buildCards(),
-          ),
+      body: Padding(
+        padding: const EdgeInsets.all(4.0),
+        child: StaggeredGrid.count(
+          crossAxisCount: 4,
+          mainAxisSpacing: 4,
+          crossAxisSpacing: 4,
+          children: [
+            StaggeredGridTile.count(
+              crossAxisCellCount: 2,
+              mainAxisCellCount: 2,
+              child: Tile(index: 0, text: 'Mission Statement', color: themeColor),
+            ),
+            StaggeredGridTile.count(
+              crossAxisCellCount: 2,
+              mainAxisCellCount: 1,
+              child: Tile(index: 1, text: 'Team', color: themeColor),
+            ),
+            StaggeredGridTile.count(
+              crossAxisCellCount: 1,
+              mainAxisCellCount: 1,
+              child: Tile(index: 2, text: 'Contact Information', color: themeColor),
+            ),
+            StaggeredGridTile.count(
+              crossAxisCellCount: 1,
+              mainAxisCellCount: 1,
+              child: Tile(index: 3, text: 'Privacy Policy', color: themeColor),
+            ),
+            StaggeredGridTile.count(
+              crossAxisCellCount: 4,
+              mainAxisCellCount: 2,
+              child: Tile(index: 4, text: 'FAQ', color: themeColor),
+            ),
+          ],
         ),
       ),
       backgroundColor: Colors.white,
     );
   }
-
-  List<Widget> _buildCards() {
-    List<Widget> cards = [];
-    for (int index = 0; index < 3; index++) {
-      int offset = index - 1;
-      bool isSelected = selectedIndex == index;
-
-      Widget card = AnimatedPositioned(
-        key: ValueKey(index),
-        duration: Duration(milliseconds: 500),
-        left: isSelected
-            ? MediaQuery.of(context).size.width / 2 - 105 // Adjusted for bigger size
-            : MediaQuery.of(context).size.width / 2 - 70 + offset * 60.0,
-        top: isSelected
-            ? MediaQuery.of(context).size.height / 2 - 157.5 // Adjusted for bigger size
-            : MediaQuery.of(context).size.height / 2 - 105,
-        child: GestureDetector(
-          onTap: () {
-            setState(() {
-              if (isSelected) {
-                selectedIndex = null;
-              } else {
-                selectedIndex = index;
-              }
-            });
-          },
-          child: AnimatedScale(
-            duration: Duration(milliseconds: 500),
-            scale: isSelected ? 1.5 : 1.0,
-            child: Transform(
-              transform: Matrix4.identity()
-                ..rotateZ(isSelected ? 0 : offset * 5 * 3.1415927 / 180),
-              origin: Offset(70, 105),
-              child: ImageCard(
-                key: cardKeys[index],
-                isSelected: isSelected,
-                frontImagePath: 'assets/images/front${index + 1}.png',
-                isFront: isFrontList[index],
-                onFlipDone: (isFront) {
-                  setState(() {
-                    isFrontList[index] = isFront;
-                  });
-                },
-              ),
-            ),
-          ),
-        ),
-      );
-
-      if (isSelected) {
-        cards.add(card);
-      } else {
-        cards.insert(0, card);
-      }
-    }
-    return cards;
-  }
 }
 
-class ImageCard extends StatefulWidget {
-  final bool isSelected;
-  final String frontImagePath;
-  final bool isFront;
-  final ValueChanged<bool> onFlipDone;
+class Tile extends StatelessWidget {
+  final int index;
+  final String text;
+  final Color color;
 
-  const ImageCard({
+  const Tile({
     Key? key,
-    required this.isSelected,
-    required this.frontImagePath,
-    required this.isFront,
-    required this.onFlipDone,
+    required this.index,
+    required this.text,
+    required this.color,
   }) : super(key: key);
 
   @override
-  _ImageCardState createState() => _ImageCardState();
-}
-
-class _ImageCardState extends State<ImageCard> {
-  late bool isFront;
-  late GlobalKey<FlipCardState> cardKey;
-
-  @override
-  void initState() {
-    super.initState();
-    isFront = widget.isFront;
-    cardKey = GlobalKey<FlipCardState>();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Container(
-      width: widget.isSelected ? 210 : 140, // Adjusted for bigger size
-      height: widget.isSelected ? 315 : 210, // Adjusted for bigger size
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(10),
-        child: FlipCard(
-          key: cardKey,
-          flipOnTouch: widget.isSelected,
-          direction: FlipDirection.HORIZONTAL,
-          onFlipDone: (isFront) {
-            setState(() {
-              this.isFront = isFront;
-              widget.onFlipDone(isFront);
-            });
-          },
-          front: Image.asset(
-            'assets/images/back.png',
-            fit: BoxFit.cover,
-          ),
-          back: Image.asset(
-            widget.frontImagePath,
-            fit: BoxFit.cover,
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) {
+            switch (index) {
+              case 0:
+                return const MissionScreen();
+              case 1:
+                return const TeamScreen();
+              case 2:
+                return const ContactScreen();
+              case 3:
+                return const PrivacyScreen();
+              case 4:
+                return const FaqScreen();
+              default:
+                return const AboutUsScreen();
+            }
+          }),
+        );
+      },
+      child: Container(
+        color: getShade(index),
+        child: Center(
+          child: Text(
+            text,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+              fontFamily: 'Raleway',
+            ),
+            textAlign: TextAlign.center,
           ),
         ),
       ),
     );
+  }
+
+  // Function to get different shades of the provided color
+  Color getShade(int index) {
+    List<Color> shades = [
+      color,
+      color.withOpacity(0.9),
+      color.withOpacity(0.8),
+      color.withOpacity(0.7),
+      color.withOpacity(0.6),
+    ];
+    return shades[index % shades.length];
   }
 }

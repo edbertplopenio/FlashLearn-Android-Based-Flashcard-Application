@@ -53,18 +53,18 @@ class _SignInScreenState extends State<SignInScreen> {
         return AlertDialog(
           title: Text(
             'Success',
-            style: TextStyle(color: lightColorScheme.primary, fontFamily: 'Raleway', fontSize: 18.0),
+            style: TextStyle(color: lightColorScheme.primary, fontFamily: 'Raleway', fontSize: 18.0, fontWeight: FontWeight.bold),
           ),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Text(message, style: TextStyle(fontFamily: 'Raleway', fontSize: 14.0)),
+                Text(message, style: TextStyle(fontFamily: 'Raleway', fontSize: 14.0,fontWeight: FontWeight.bold)),
               ],
             ),
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text('OK', style: TextStyle(fontFamily: 'Raleway')),
+              child: const Text('OK', style: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.bold)),
               onPressed: () {
                 Navigator.of(context).pop();
                 Navigator.pushReplacement(
@@ -85,7 +85,7 @@ class _SignInScreenState extends State<SignInScreen> {
     if (value == null || value.isEmpty) {
       return 'Please enter Email';
     }
-    if (!RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$").hasMatch(value)) {
+    if (!RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+$").hasMatch(value)) {
       return 'Please enter a valid email address';
     }
     return null;
@@ -142,7 +142,7 @@ class _SignInScreenState extends State<SignInScreen> {
                         controller: _emailController,
                         validator: _validateEmail,
                         decoration: InputDecoration(
-                          label: const Text('Email', style: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.w600)),
+                          label: const Text('Email', style: TextStyle(fontFamily: 'Raleway', fontWeight: FontWeight.w600)),
                           hintText: 'Enter Email',
                           hintStyle: const TextStyle(
                             color: Colors.black26,
@@ -170,7 +170,7 @@ class _SignInScreenState extends State<SignInScreen> {
                         obscuringCharacter: '*',
                         validator: _validatePassword,
                         decoration: InputDecoration(
-                          label: const Text('Password', style: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.w600)),
+                          label: const Text('Password', style: TextStyle(fontFamily: 'Raleway', fontWeight: FontWeight.w600)),
                           hintText: 'Enter Password',
                           hintStyle: const TextStyle(
                             color: Colors.black26,
@@ -221,7 +221,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                 style: TextStyle(
                                   color: Colors.black45,
                                   fontFamily: 'Raleway',
-                                  fontWeight: FontWeight.w600
+                                  fontWeight: FontWeight.w600,
                                 ),
                               ),
                             ],
@@ -239,7 +239,7 @@ class _SignInScreenState extends State<SignInScreen> {
                               _signIn();
                             }
                           },
-                          child: const Text('Sign in', style: TextStyle(fontFamily: 'Raleway',)),
+                          child: const Text('Sign in', style: TextStyle(fontFamily: 'Raleway')),
                         ),
                       ),
                       const SizedBox(
@@ -264,7 +264,7 @@ class _SignInScreenState extends State<SignInScreen> {
                               style: TextStyle(
                                 color: Colors.black,
                                 fontFamily: 'Raleway',
-                                fontWeight: FontWeight.w600
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                           ),
@@ -311,7 +311,7 @@ class _SignInScreenState extends State<SignInScreen> {
                             style: TextStyle(
                               color: Colors.black,
                               fontFamily: 'Raleway',
-                              fontWeight: FontWeight.w600
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                           GestureDetector(
