@@ -12,6 +12,7 @@ import '../screens/welcome_screen.dart';
 import 'profile_screen.dart';
 import 'about_us_screen.dart';
 import 'theme_screen.dart'; // Import the theme screen
+import '../theme/gradient_color_option.dart'; // Import GradientColorOption
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -31,8 +32,9 @@ class _HomeScreenState extends State<HomeScreen> {
   int totalFlashcards = 0;
   String searchQuery = '';
   Color themeColor = lightColorScheme.primary;
+  GradientColorOption? themeGradient;
 
-  final List<String> flashcardFacts = [
+final List<String> flashcardFacts = [
     "Flashcards are a powerful tool for memorization.",
     "Spaced repetition with flashcards enhances long-term recall.",
     "Flashcards are great for language learning.",
@@ -58,11 +60,12 @@ class _HomeScreenState extends State<HomeScreen> {
     "The consistent review with flashcards helps in mastering difficult topics over time."
   ];
 
+
   @override
   void initState() {
     super.initState();
     _loadUserNameAndProfileImage();
-    _loadThemeColor();
+    _loadTheme();
     _pageController = PageController(initialPage: _currentIndex);
     _cardsPageController = PageController(initialPage: 1, viewportFraction: 0.5); // Adjust the viewportFraction as needed
   }
@@ -77,11 +80,18 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  Future<void> _loadThemeColor() async {
+  Future<void> _loadTheme() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       final int colorValue = prefs.getInt('theme_color') ?? lightColorScheme.primary.value;
       themeColor = Color(colorValue);
+
+      final String? gradientJson = prefs.getString('theme_gradient');
+      if (gradientJson != null) {
+        themeGradient = GradientColorOption.fromJson(json.decode(gradientJson));
+      } else {
+        themeGradient = null;
+      }
     });
   }
 
@@ -218,13 +228,13 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               actions: <Widget>[
                 TextButton(
-                  child: Text('Cancel', style: TextStyle(fontFamily: 'Raleway', color: themeColor)),
+                  child: Text('Cancel', style: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.bold, color: themeGradient != null ? themeGradient!.gradient.colors.first : themeColor)),
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
                 ),
                 TextButton(
-                  child: Text('Create', style: TextStyle(fontFamily: 'Raleway', color: themeColor)),
+                  child: Text('Create', style: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.bold, color: themeGradient != null ? themeGradient!.gradient.colors.first : themeColor)),
                   onPressed: () {
                     if (setName.isNotEmpty && !nameExists) {
                       setState(() {
@@ -269,9 +279,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     controller: _controller,
                     decoration: InputDecoration(
                       labelText: 'New Set Name',
-                      labelStyle: TextStyle(fontFamily: 'Raleway'),
+                      labelStyle: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.bold,),
                       errorText: nameExists ? 'Set name already exists' : null,
-                      errorStyle: TextStyle(fontFamily: 'Raleway'),
+                      errorStyle: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.bold,),
                     ),
                     onChanged: (value) {
                       setState(() {
@@ -284,13 +294,13 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               actions: <Widget>[
                 TextButton(
-                  child: Text('Cancel', style: TextStyle(fontFamily: 'Raleway', color: themeColor)),
+                  child: Text('Cancel', style: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.bold, color: themeGradient != null ? themeGradient!.gradient.colors.first : themeColor)),
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
                 ),
                 TextButton(
-                  child: Text('Rename', style: TextStyle(fontFamily: 'Raleway', color: themeColor)),
+                  child: Text('Rename', style: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.bold, color: themeGradient != null ? themeGradient!.gradient.colors.first : themeColor)),
                   onPressed: () {
                     if (setName.isNotEmpty && !nameExists) {
                       _renameFlashcardSet(flashcardSet.name, setName);
@@ -311,17 +321,17 @@ class _HomeScreenState extends State<HomeScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Delete Flashcard Set', style: TextStyle(fontFamily: 'Raleway')),
-          content: Text('Do you really want to delete "${flashcardSet.name}"?', style: TextStyle(fontFamily: 'Raleway')),
+          title: const Text('Delete Flashcard Set', style: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.bold)),
+          content: Text('Do you really want to delete "${flashcardSet.name}"?', style: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.bold)),
           actions: <Widget>[
             TextButton(
-              child: Text('Cancel', style: TextStyle(fontFamily: 'Raleway', color: themeColor)),
+              child: Text('Cancel', style: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.bold, color: themeGradient != null ? themeGradient!.gradient.colors.first : themeColor)),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text('Delete', style: TextStyle(fontFamily: 'Raleway', color: themeColor)),
+              child: Text('Delete', style: TextStyle(fontFamily: 'Raleway',fontWeight: FontWeight.bold, color: themeGradient != null ? themeGradient!.gradient.colors.first : themeColor)),
               onPressed: () {
                 Navigator.of(context).pop();
                 _deleteFlashcardSet(flashcardSet.name);
@@ -379,7 +389,14 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: themeColor,
+        backgroundColor: themeGradient != null ? themeGradient!.gradient.colors.first : themeColor,
+        flexibleSpace: themeGradient != null
+            ? Container(
+                decoration: BoxDecoration(
+                  gradient: themeGradient!.gradient,
+                ),
+              )
+            : null,
         title: Text(
           _currentIndex == 0 ? 'Home' : 'Flashcard Sets',
           style: TextStyle(fontFamily: 'Raleway', fontWeight: FontWeight.w800),
@@ -406,7 +423,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Icon(Icons.account_circle, size: 75),
                     ),
               decoration: BoxDecoration(
-                color: themeColor,
+                color: themeGradient != null ? themeGradient!.gradient.colors.first : themeColor,
+                gradient: themeGradient != null ? themeGradient!.gradient : null,
               ),
             ),
             ListTile(
@@ -457,7 +475,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   MaterialPageRoute(builder: (context) => const ThemeScreen()), // Navigate to ThemeScreen
                 ).then((_) {
                   // Refresh the theme color when returning from ThemeScreen
-                  _loadThemeColor();
+                  _loadTheme();
                 });
               },
             ),
@@ -511,7 +529,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             height: 150,
                             margin: EdgeInsets.all(8.0),
                             decoration: BoxDecoration(
-                              color: themeColor,
+                              gradient: themeGradient != null ? themeGradient!.gradient : null,
+                              color: themeGradient == null ? themeColor : null,
                               borderRadius: BorderRadius.circular(12.0),
                               boxShadow: [
                                 BoxShadow(
@@ -566,7 +585,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             height: 150,
                             margin: EdgeInsets.all(8.0),
                             decoration: BoxDecoration(
-                              color: themeColor,
+                              gradient: themeGradient != null ? themeGradient!.gradient : null,
+                              color: themeGradient == null ? themeColor : null,
                               borderRadius: BorderRadius.circular(12.0),
                               boxShadow: [
                                 BoxShadow(
@@ -619,7 +639,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                     ),
                     SizedBox(
-                      height: 260, // Adjust the height as needed
+                      height: 280, // Adjust the height as needed
                       child: Row(
                         children: [
                           Expanded(
@@ -630,7 +650,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 return Container(
                                   margin: EdgeInsets.all(18.0),
                                   decoration: BoxDecoration(
-                                    color: themeColor,
+                                    gradient: themeGradient != null ? themeGradient!.gradient : null,
+                                    color: themeGradient == null ? themeColor : null,
                                     borderRadius: BorderRadius.circular(12.0),
                                     boxShadow: [
                                       BoxShadow(
@@ -706,7 +727,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
                 fontFamily: 'Raleway',
-                color: themeColor,
+                color: themeGradient != null ? themeGradient!.gradient.colors.first : themeColor,
               ),
             ),
           ),
@@ -716,14 +737,14 @@ class _HomeScreenState extends State<HomeScreen> {
         onPressed: _showCreateSetDialog,
         tooltip: 'Create Flashcard Set',
         child: const Icon(Icons.add),
-        backgroundColor: themeColor,
+        backgroundColor: themeGradient != null ? themeGradient!.gradient.colors.first : themeColor,
         shape: CircleBorder(),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomAppBar(
         shape: CircularNotchedRectangle(),
         notchMargin: 8.0,
-        color: themeColor,
+        color: themeGradient != null ? themeGradient!.gradient.colors.first : themeColor,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
@@ -759,7 +780,8 @@ class _HomeScreenState extends State<HomeScreen> {
       widthFactor: 1, // 100% width of the screen
       child: Container(
         decoration: BoxDecoration(
-          color: themeColor, // Background color of the card
+          gradient: themeGradient != null ? themeGradient!.gradient : null,
+          color: themeGradient == null ? themeColor : null,
           borderRadius: BorderRadius.circular(12.0),
           boxShadow: [
             BoxShadow(
@@ -828,14 +850,8 @@ class _HomeScreenState extends State<HomeScreen> {
         },
         child: Container(
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                themeColor,
-                themeColor,
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
+            gradient: themeGradient != null ? themeGradient!.gradient : null,
+            color: themeGradient == null ? themeColor : null,
             borderRadius: BorderRadius.circular(12.0),
             boxShadow: [
               BoxShadow(

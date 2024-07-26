@@ -2,36 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import '../theme/theme.dart';
-
-class GradientColorOption {
-  final List<Color> colors;
-  final String name;
-
-  GradientColorOption(this.colors, this.name);
-
-  Map<String, dynamic> toJson() => {
-        'colors': colors.map((color) => color.value).toList(),
-        'name': name,
-      };
-
-  static GradientColorOption fromJson(Map<String, dynamic> json) {
-    List<Color> colors = (json['colors'] as List).map((value) => Color(value)).toList();
-    return GradientColorOption(colors, json['name']);
-  }
-}
-
-final List<GradientColorOption> gradientOptions = [
-  GradientColorOption([Color(0xFFf46b45), Color(0xFFeea849)], 'Sunset'),
-  GradientColorOption([Color(0xFF4568dc), Color(0xFFb06ab3)], 'Royal'),
-  GradientColorOption([Color(0xFF6a11cb), Color(0xFF2575fc)], 'Blue Moon'),
-  GradientColorOption([Color(0xFFff9a9e), Color(0xFFfad0c4)], 'Pink'),
-  GradientColorOption([Color(0xFFff758c), Color(0xFFff7eb3)], 'Sweet'),
-  GradientColorOption([Color(0xFFff9966), Color(0xFFff5e62)], 'Peach'),
-  GradientColorOption([Color(0xFF42e695), Color(0xFF3bb2b8)], 'Aqua'),
-  GradientColorOption([Color(0xFF30cfd0), Color(0xFF330867)], 'Horizon'),
-  GradientColorOption([Color(0xFFffe259), Color(0xFFffa751)], 'Summer'),
-  GradientColorOption([Color(0xFF11998e), Color(0xFF38ef7d)], 'Greenery'),
-];
+import '../theme/gradient_color_option.dart';
 
 class ThemeScreen extends StatefulWidget {
   const ThemeScreen({Key? key}) : super(key: key);
@@ -41,7 +12,6 @@ class ThemeScreen extends StatefulWidget {
 }
 
 class _ThemeScreenState extends State<ThemeScreen> {
-  // Define a list of colors for the theme palette
   final List<Color> themeColors = [
     Colors.red,
     Colors.pink,
@@ -83,7 +53,20 @@ class _ThemeScreenState extends State<ThemeScreen> {
     Color(0xFF2C3E50),
   ];
 
-  // Currently selected color
+  // Updated gradient options
+  final List<GradientColorOption> gradientOptions = [
+    GradientColorOption(LinearGradient(colors: [Color(0xFFf46b45), Color(0xFFeea849)], begin: Alignment.topLeft, end: Alignment.bottomRight)),
+    GradientColorOption(LinearGradient(colors: [Color(0xFF4568dc), Color(0xFFb06ab3)], begin: Alignment.topLeft, end: Alignment.bottomRight)),
+    GradientColorOption(LinearGradient(colors: [Color(0xFF6a11cb), Color(0xFF2575fc)], begin: Alignment.topLeft, end: Alignment.bottomRight)),
+    GradientColorOption(LinearGradient(colors: [Color(0xFFff9a9e), Color(0xFFfad0c4)], begin: Alignment.topLeft, end: Alignment.bottomRight)),
+    GradientColorOption(LinearGradient(colors: [Color(0xFFff758c), Color(0xFFff7eb3)], begin: Alignment.topLeft, end: Alignment.bottomRight)),
+    GradientColorOption(LinearGradient(colors: [Color(0xFFff9966), Color(0xFFff5e62)], begin: Alignment.topLeft, end: Alignment.bottomRight)),
+    GradientColorOption(LinearGradient(colors: [Color(0xFF42e695), Color(0xFF3bb2b8)], begin: Alignment.topLeft, end: Alignment.bottomRight)),
+    GradientColorOption(LinearGradient(colors: [Color(0xFF30cfd0), Color(0xFF330867)], begin: Alignment.topLeft, end: Alignment.bottomRight)),
+    GradientColorOption(LinearGradient(colors: [Color(0xFFffe259), Color(0xFFffa751)], begin: Alignment.topLeft, end: Alignment.bottomRight)),
+    GradientColorOption(LinearGradient(colors: [Color(0xFF11998e), Color(0xFF38ef7d)], begin: Alignment.topLeft, end: Alignment.bottomRight)),
+  ];
+
   Color selectedColor = lightColorScheme.primary;
   GradientColorOption? selectedGradient;
 
@@ -113,15 +96,11 @@ class _ThemeScreenState extends State<ThemeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Theme Settings', style: TextStyle(fontFamily: 'Raleway', fontWeight: FontWeight.bold)),
-        backgroundColor: selectedGradient != null ? selectedGradient!.colors.first : selectedColor,
+        backgroundColor: selectedGradient != null ? selectedGradient!.gradient.colors.first : selectedColor,
         flexibleSpace: selectedGradient != null
             ? Container(
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: selectedGradient!.colors,
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
+                  gradient: selectedGradient!.gradient,
                 ),
               )
             : null,
@@ -150,7 +129,6 @@ class _ThemeScreenState extends State<ThemeScreen> {
                 itemCount: themeColors.length + gradientOptions.length + 1,
                 itemBuilder: (context, index) {
                   if (index == 0) {
-                    // Default option
                     return GestureDetector(
                       onTap: () {
                         setState(() {
@@ -209,18 +187,14 @@ class _ThemeScreenState extends State<ThemeScreen> {
                     return GestureDetector(
                       onTap: () {
                         setState(() {
-                          selectedColor = gradient.colors.first;
+                          selectedColor = gradient.gradient.colors.first;
                           selectedGradient = gradient;
                         });
-                        _applyTheme(gradient.colors.first, gradient);
+                        _applyTheme(gradient.gradient.colors.first, gradient);
                       },
                       child: Container(
                         decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: gradient.colors,
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
+                          gradient: gradient.gradient,
                           shape: BoxShape.circle,
                           border: Border.all(
                             color: gradient == selectedGradient ? Colors.black : Colors.transparent,

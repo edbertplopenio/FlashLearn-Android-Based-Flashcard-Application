@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'dart:convert'; // Import dart:convert for json decoding
 import 'mission_screen.dart';
 import 'team_screen.dart';
 import 'contact_screen.dart';
 import 'privacy_screen.dart';
 import 'faq_screen.dart';
 import '../theme/theme.dart';
+import '../theme/gradient_color_option.dart'; // Import GradientColorOption
 
 void main() {
   runApp(MaterialApp(
@@ -23,18 +25,26 @@ class AboutUsScreen extends StatefulWidget {
 
 class _AboutUsScreenState extends State<AboutUsScreen> {
   Color themeColor = lightColorScheme.primary;
+  GradientColorOption? themeGradient;
 
   @override
   void initState() {
     super.initState();
-    _loadThemeColor();
+    _loadTheme();
   }
 
-  Future<void> _loadThemeColor() async {
+  Future<void> _loadTheme() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       final int colorValue = prefs.getInt('theme_color') ?? lightColorScheme.primary.value;
       themeColor = Color(colorValue);
+
+      final String? gradientJson = prefs.getString('theme_gradient');
+      if (gradientJson != null) {
+        themeGradient = GradientColorOption.fromJson(json.decode(gradientJson));
+      } else {
+        themeGradient = null;
+      }
     });
   }
 
@@ -46,7 +56,14 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
           'About Us',
           style: TextStyle(fontFamily: 'Raleway', fontWeight: FontWeight.bold),
         ),
-        backgroundColor: themeColor,
+        backgroundColor: themeGradient != null ? themeGradient!.gradient.colors.first : themeColor,
+        flexibleSpace: themeGradient != null
+            ? Container(
+                decoration: BoxDecoration(
+                  gradient: themeGradient!.gradient,
+                ),
+              )
+            : null,
       ),
       body: Padding(
         padding: const EdgeInsets.all(4.0),
@@ -58,27 +75,27 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
             StaggeredGridTile.count(
               crossAxisCellCount: 2,
               mainAxisCellCount: 2,
-              child: Tile(index: 0, text: 'Mission Statement', color: themeColor),
+              child: Tile(index: 0, text: 'Mission Statement', themeColor: themeColor, themeGradient: themeGradient),
             ),
             StaggeredGridTile.count(
               crossAxisCellCount: 2,
               mainAxisCellCount: 1,
-              child: Tile(index: 1, text: 'Team', color: themeColor),
+              child: Tile(index: 1, text: 'Team', themeColor: themeColor, themeGradient: themeGradient),
             ),
             StaggeredGridTile.count(
               crossAxisCellCount: 1,
               mainAxisCellCount: 1,
-              child: Tile(index: 2, text: 'Contact Information', color: themeColor),
+              child: Tile(index: 2, text: 'Contact Information', themeColor: themeColor, themeGradient: themeGradient),
             ),
             StaggeredGridTile.count(
               crossAxisCellCount: 1,
               mainAxisCellCount: 1,
-              child: Tile(index: 3, text: 'Privacy Policy', color: themeColor),
+              child: Tile(index: 3, text: 'Privacy Policy', themeColor: themeColor, themeGradient: themeGradient),
             ),
             StaggeredGridTile.count(
               crossAxisCellCount: 4,
               mainAxisCellCount: 2,
-              child: Tile(index: 4, text: 'FAQ', color: themeColor),
+              child: Tile(index: 4, text: 'FAQ', themeColor: themeColor, themeGradient: themeGradient),
             ),
           ],
         ),
@@ -91,13 +108,15 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
 class Tile extends StatelessWidget {
   final int index;
   final String text;
-  final Color color;
+  final Color themeColor;
+  final GradientColorOption? themeGradient;
 
   const Tile({
     Key? key,
     required this.index,
     required this.text,
-    required this.color,
+    required this.themeColor,
+    this.themeGradient,
   }) : super(key: key);
 
   @override
@@ -125,7 +144,11 @@ class Tile extends StatelessWidget {
         );
       },
       child: Container(
-        color: getShade(index),
+        decoration: BoxDecoration(
+          gradient: themeGradient != null ? themeGradient!.gradient : null,
+          color: themeGradient == null ? getShade(index) : null,
+          borderRadius: BorderRadius.circular(12.0),
+        ),
         child: Center(
           child: Text(
             text,
@@ -145,11 +168,11 @@ class Tile extends StatelessWidget {
   // Function to get different shades of the provided color
   Color getShade(int index) {
     List<Color> shades = [
-      color,
-      color.withOpacity(0.9),
-      color.withOpacity(0.8),
-      color.withOpacity(0.7),
-      color.withOpacity(0.6),
+      themeColor,
+      themeColor.withOpacity(0.9),
+      themeColor.withOpacity(0.8),
+      themeColor.withOpacity(0.7),
+      themeColor.withOpacity(0.6),
     ];
     return shades[index % shades.length];
   }

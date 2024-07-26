@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert'; // Import dart:convert for json decoding
 import '../theme/theme.dart';
+import '../theme/gradient_color_option.dart'; // Import GradientColorOption
 
 class ContactScreen extends StatefulWidget {
   const ContactScreen({Key? key}) : super(key: key);
@@ -11,18 +13,26 @@ class ContactScreen extends StatefulWidget {
 
 class _ContactScreenState extends State<ContactScreen> {
   Color themeColor = lightColorScheme.primary;
+  GradientColorOption? themeGradient;
 
   @override
   void initState() {
     super.initState();
-    _loadThemeColor();
+    _loadTheme();
   }
 
-  Future<void> _loadThemeColor() async {
+  Future<void> _loadTheme() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       final int colorValue = prefs.getInt('theme_color') ?? lightColorScheme.primary.value;
       themeColor = Color(colorValue);
+
+      final String? gradientJson = prefs.getString('theme_gradient');
+      if (gradientJson != null) {
+        themeGradient = GradientColorOption.fromJson(json.decode(gradientJson));
+      } else {
+        themeGradient = null;
+      }
     });
   }
 
@@ -35,7 +45,14 @@ class _ContactScreenState extends State<ContactScreen> {
           'Contact Information',
           style: TextStyle(fontFamily: 'Raleway', fontWeight: FontWeight.bold),
         ),
-        backgroundColor: themeColor,
+        backgroundColor: themeGradient != null ? themeGradient!.gradient.colors.first : themeColor,
+        flexibleSpace: themeGradient != null
+            ? Container(
+                decoration: BoxDecoration(
+                  gradient: themeGradient!.gradient,
+                ),
+              )
+            : null,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

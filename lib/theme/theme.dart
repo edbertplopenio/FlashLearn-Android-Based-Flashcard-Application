@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/gradient_color_option.dart';
 
 const lightColorScheme = ColorScheme(
   brightness: Brightness.light,

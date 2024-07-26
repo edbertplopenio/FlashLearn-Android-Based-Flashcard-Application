@@ -7,8 +7,14 @@ class GradientColorOption {
 
   Map<String, dynamic> toJson() => {
         'colors': gradient.colors.map((color) => color.value).toList(),
-        'begin': {'dx': (gradient.begin as Alignment).x, 'dy': (gradient.begin as Alignment).y},
-        'end': {'dx': (gradient.end as Alignment).x, 'dy': (gradient.end as Alignment).y},
+        'begin': {
+          'dx': (gradient.begin as Alignment).x,
+          'dy': (gradient.begin as Alignment).y,
+        },
+        'end': {
+          'dx': (gradient.end as Alignment).x,
+          'dy': (gradient.end as Alignment).y,
+        },
       };
 
   static GradientColorOption fromJson(Map<String, dynamic> json) {
