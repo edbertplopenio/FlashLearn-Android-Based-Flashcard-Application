@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 const lightColorScheme = ColorScheme(
   brightness: Brightness.light,
-  primary: Color(0xFFC89B57), // Updated primary color here (200, 155, 87)
+  primary: Color(0xFFC89B57),
   onPrimary: Color(0xFFFFFFFF),
   secondary: Color(0xFF6EAEE7),
   onSecondary: Color(0xFFFFFFFF),
@@ -23,7 +23,7 @@ ThemeData lightMode = ThemeData(
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ButtonStyle(
       backgroundColor: MaterialStateProperty.all<Color>(
-        lightColorScheme.primary, // Use primary color for the button
+        lightColorScheme.primary,
       ),
       foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
       elevation: MaterialStateProperty.all<double>(5.0),
@@ -37,3 +37,27 @@ ThemeData lightMode = ThemeData(
     ),
   ),
 );
+
+// Example of dynamic theme change using a ThemeProvider
+class ThemeProvider with ChangeNotifier {
+  ThemeData _themeData;
+
+  ThemeProvider(this._themeData);
+
+  ThemeData get theme => _themeData;
+
+  set theme(ThemeData theme) {
+    _themeData = theme;
+    notifyListeners();
+  }
+
+  void setGradientTheme(List<Color> colors) {
+    _themeData = _themeData.copyWith(
+      primaryColor: colors[0],
+      appBarTheme: AppBarTheme(
+        backgroundColor: Colors.transparent,
+      ),
+    );
+    notifyListeners();
+  }
+}

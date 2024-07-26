@@ -1,6 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 import '../theme/theme.dart';
+
+class GradientColorOption {
+  final List<Color> colors;
+  final String name;
+
+  GradientColorOption(this.colors, this.name);
+
+  Map<String, dynamic> toJson() => {
+        'colors': colors.map((color) => color.value).toList(),
+        'name': name,
+      };
+
+  static GradientColorOption fromJson(Map<String, dynamic> json) {
+    List<Color> colors = (json['colors'] as List).map((value) => Color(value)).toList();
+    return GradientColorOption(colors, json['name']);
+  }
+}
+
+final List<GradientColorOption> gradientOptions = [
+  GradientColorOption([Color(0xFFf46b45), Color(0xFFeea849)], 'Sunset'),
+  GradientColorOption([Color(0xFF4568dc), Color(0xFFb06ab3)], 'Royal'),
+  GradientColorOption([Color(0xFF6a11cb), Color(0xFF2575fc)], 'Blue Moon'),
+  GradientColorOption([Color(0xFFff9a9e), Color(0xFFfad0c4)], 'Pink'),
+  GradientColorOption([Color(0xFFff758c), Color(0xFFff7eb3)], 'Sweet'),
+  GradientColorOption([Color(0xFFff9966), Color(0xFFff5e62)], 'Peach'),
+  GradientColorOption([Color(0xFF42e695), Color(0xFF3bb2b8)], 'Aqua'),
+  GradientColorOption([Color(0xFF30cfd0), Color(0xFF330867)], 'Horizon'),
+  GradientColorOption([Color(0xFFffe259), Color(0xFFffa751)], 'Summer'),
+  GradientColorOption([Color(0xFF11998e), Color(0xFF38ef7d)], 'Greenery'),
+];
 
 class ThemeScreen extends StatefulWidget {
   const ThemeScreen({Key? key}) : super(key: key);
@@ -30,30 +61,31 @@ class _ThemeScreenState extends State<ThemeScreen> {
     Colors.brown,
     Colors.grey,
     Colors.blueGrey,
-    Color(0xFFFFD1DC), // pastel pink
-    Color(0xFFFFE4E1), // pastel light pink
-    Color(0xFFFFDAB9), // pastel peach
-    Color(0xFFFFFACD), // pastel lemon chiffon
-    Color(0xFFFAFAD2), // pastel light goldenrod yellow
-    Color(0xFFE0FFFF), // pastel light cyan
-    Color(0xFFE6E6FA), // pastel lavender
-    Color(0xFFD8BFD8), // pastel thistle
-    Color(0xFFF0E68C), // pastel khaki
-    Color(0xFF98FB98), // pastel pale green
-    Color(0xFF3E4A89), // dark blue
-    Color(0xFF4B9CD3), // medium blue
-    Color(0xFF6B9080), // desaturated green
-    Color(0xFF34568B), // classic blue
-    Color(0xFF92A8D1), // air blue
-    Color(0xFF009688), // teal
-    Color(0xFF00BFA5), // turquoise
-    Color(0xFF00695C), // dark teal
-    Color(0xFF4A6572), // blue-grey
-    Color(0xFF2C3E50), // midnight blue
+    Color(0xFFFFD1DC),
+    Color(0xFFFFE4E1),
+    Color(0xFFFFDAB9),
+    Color(0xFFFFFACD),
+    Color(0xFFFAFAD2),
+    Color(0xFFE0FFFF),
+    Color(0xFFE6E6FA),
+    Color(0xFFD8BFD8),
+    Color(0xFFF0E68C),
+    Color(0xFF98FB98),
+    Color(0xFF3E4A89),
+    Color(0xFF4B9CD3),
+    Color(0xFF6B9080),
+    Color(0xFF34568B),
+    Color(0xFF92A8D1),
+    Color(0xFF009688),
+    Color(0xFF00BFA5),
+    Color(0xFF00695C),
+    Color(0xFF4A6572),
+    Color(0xFF2C3E50),
   ];
 
   // Currently selected color
   Color selectedColor = lightColorScheme.primary;
+  GradientColorOption? selectedGradient;
 
   @override
   void initState() {
@@ -64,8 +96,15 @@ class _ThemeScreenState extends State<ThemeScreen> {
   Future<void> _loadSelectedTheme() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      final int colorValue = prefs.getInt('theme_color') ?? lightColorScheme.primary.value;
-      selectedColor = Color(colorValue);
+      final int? colorValue = prefs.getInt('theme_color');
+      if (colorValue != null) {
+        selectedColor = Color(colorValue);
+      }
+
+      final String? gradientJson = prefs.getString('theme_gradient');
+      if (gradientJson != null) {
+        selectedGradient = GradientColorOption.fromJson(json.decode(gradientJson));
+      }
     });
   }
 
@@ -74,7 +113,18 @@ class _ThemeScreenState extends State<ThemeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Theme Settings', style: TextStyle(fontFamily: 'Raleway', fontWeight: FontWeight.bold)),
-        backgroundColor: selectedColor,
+        backgroundColor: selectedGradient != null ? selectedGradient!.colors.first : selectedColor,
+        flexibleSpace: selectedGradient != null
+            ? Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: selectedGradient!.colors,
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+              )
+            : null,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -97,7 +147,7 @@ class _ThemeScreenState extends State<ThemeScreen> {
                   crossAxisSpacing: 16.0,
                   mainAxisSpacing: 16.0,
                 ),
-                itemCount: themeColors.length + 1, // +1 for the default option
+                itemCount: themeColors.length + gradientOptions.length + 1,
                 itemBuilder: (context, index) {
                   if (index == 0) {
                     // Default option
@@ -105,15 +155,16 @@ class _ThemeScreenState extends State<ThemeScreen> {
                       onTap: () {
                         setState(() {
                           selectedColor = lightColorScheme.primary;
+                          selectedGradient = null;
                         });
-                        _applyTheme(selectedColor);
+                        _applyTheme(selectedColor, null);
                       },
                       child: Container(
                         decoration: BoxDecoration(
                           color: Colors.grey[300],
                           shape: BoxShape.circle,
                           border: Border.all(
-                            color: selectedColor == lightColorScheme.primary ? Colors.black : Colors.transparent,
+                            color: selectedColor == lightColorScheme.primary && selectedGradient == null ? Colors.black : Colors.transparent,
                             width: 2.0,
                           ),
                         ),
@@ -129,25 +180,54 @@ class _ThemeScreenState extends State<ThemeScreen> {
                         ),
                       ),
                     );
-                  } else {
+                  } else if (index <= themeColors.length) {
                     final color = themeColors[index - 1];
                     return GestureDetector(
                       onTap: () {
                         setState(() {
                           selectedColor = color;
+                          selectedGradient = null;
                         });
-                        _applyTheme(color);
+                        _applyTheme(color, null);
                       },
                       child: Container(
                         decoration: BoxDecoration(
                           color: color,
                           shape: BoxShape.circle,
                           border: Border.all(
-                            color: color == selectedColor ? Colors.black : Colors.transparent,
+                            color: color == selectedColor && selectedGradient == null ? Colors.black : Colors.transparent,
                             width: 2.0,
                           ),
                         ),
-                        child: color == selectedColor
+                        child: color == selectedColor && selectedGradient == null
+                            ? Icon(Icons.check, color: Colors.white)
+                            : null,
+                      ),
+                    );
+                  } else {
+                    final gradient = gradientOptions[index - themeColors.length - 1];
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          selectedColor = gradient.colors.first;
+                          selectedGradient = gradient;
+                        });
+                        _applyTheme(gradient.colors.first, gradient);
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: gradient.colors,
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: gradient == selectedGradient ? Colors.black : Colors.transparent,
+                            width: 2.0,
+                          ),
+                        ),
+                        child: gradient == selectedGradient
                             ? Icon(Icons.check, color: Colors.white)
                             : null,
                       ),
@@ -162,9 +242,15 @@ class _ThemeScreenState extends State<ThemeScreen> {
     );
   }
 
-  void _applyTheme(Color color) async {
+  void _applyTheme(Color color, GradientColorOption? gradient) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt('theme_color', color.value);
+
+    if (gradient != null) {
+      await prefs.setString('theme_gradient', json.encode(gradient.toJson()));
+    } else {
+      await prefs.remove('theme_gradient');
+    }
 
     // Update the theme in your app (you might need to use a state management solution here)
     // For example, using Provider:
